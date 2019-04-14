@@ -21,7 +21,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // UI references.
     private EditText mEmailView, mPasswordView;
-    private Button btnLogin;
+    private Button btnLogin, btnRegister;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -36,12 +36,21 @@ public class LoginActivity extends AppCompatActivity {
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         btnLogin = findViewById(R.id.btnLogin);
+        btnRegister = findViewById(R.id.btnRegister);
 
         btnLogin.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 attemptLogin();
+            }
+        });
+
+        btnRegister.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                attempRegister();
             }
         });
     }
@@ -87,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             // Check for an email address and password in database.
-            if(email.equals("test@gmail.com") && password.equals("test123")) {
+            if(email.equals("test@gmail.com") && password.equals("test1234")) {
                 showProgress(true);
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -96,6 +105,11 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void attempRegister(){
+        Intent intent = new Intent(this,RegisterActivity.class);
+        startActivity(intent);
     }
 
     private boolean isEmailValid(String email) {
