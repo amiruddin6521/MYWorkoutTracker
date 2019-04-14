@@ -14,6 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -24,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;
     private View mProgressView;
     private View mLoginFormView;
+    private WebServiceCall wsc = new WebServiceCall();
+    private JSONObject jsnObj = new JSONObject();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +76,8 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String email = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -96,14 +106,46 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             // Check for an email address and password in database.
-            if(email.equals("test@gmail.com") && password.equals("test1234")) {
-                showProgress(true);
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                Toast.makeText(LoginActivity.this, "You has successfully login!", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
-            }
+            Runnable run = new Runnable()
+            {
+                String strRespond = "";
+                String name ="";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnLogin"));
+                    params.add(new BasicNameValuePair("varEmail", email));
+                    params.add(new BasicNameValuePair("varPassword", password));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+                        name = jsnObj.getString("name");
+
+                    } catch (JSONException e){
+                        //if fail to get from server, get from local mobile time
+                        String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
+                        Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                String strMsg = " Welcome " + name + "!";
+                                Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
         }
     }
 

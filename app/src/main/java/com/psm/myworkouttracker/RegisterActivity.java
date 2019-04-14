@@ -71,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRadioGender();
+
             }
         });
 
@@ -116,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         String result = radMale.getText().toString();
 
-        Toast.makeText(RegisterActivity.this, result, Toast.LENGTH_SHORT).show();
+
         return result;
     }
 
