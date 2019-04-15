@@ -1,5 +1,6 @@
 package com.psm.myworkouttracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,14 +13,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private String id, email, name;
+    //private TextView txtName, txtEmail;
+    private ImageView imageView1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get the transferred data from source activity.
+        Intent intent = getIntent();
+        id = intent.getStringExtra("id");
+        name = intent.getStringExtra("name");
+        email = intent.getStringExtra("email");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -40,6 +55,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header= navigationView.getHeaderView(0);
+        TextView txtName= header.findViewById(R.id.txtName1);
+        TextView txtEmail= header.findViewById(R.id.txtEmail1);
+
+        txtName.setText(name);
+        txtEmail.setText(email);
     }
 
     @Override

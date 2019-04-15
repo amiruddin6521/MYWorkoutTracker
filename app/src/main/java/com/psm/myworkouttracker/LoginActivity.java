@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
         Runnable run = new Runnable()
         {
             String strRespond = "";
-            String name ="";
+            String name, id;
             @Override
             public void run()
             {
@@ -181,6 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                     jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                     strRespond = jsnObj.getString("respond");
                     name = jsnObj.getString("name");
+                    id = jsnObj.getString("id");
 
                 } catch (JSONException e){
                     //if fail to get from server, get from local mobile time
@@ -193,8 +194,11 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                         if(strRespond.equals("True")) {
                             String strMsg = " Welcome " + name + "!";
-                            Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(LoginActivity.this, id, Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra("id", id);
+                            intent.putExtra("name", name);
+                            intent.putExtra("email", email);
                             startActivity(intent);
                         } else {
                             Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
