@@ -69,6 +69,7 @@
                     android:id="@+id/txtName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:selectAllOnFocus="true"
                     android:hint="@string/prompt_name"
                     android:inputType="textPersonName"
                     android:maxLines="1"
@@ -84,6 +85,7 @@
                     android:id="@+id/txtEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:selectAllOnFocus="true"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
@@ -100,6 +102,7 @@
                     android:id="@+id/txtPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:selectAllOnFocus="true"
                     android:hint="@string/prompt_password"
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_in_short"
@@ -128,7 +131,7 @@
                     android:id="@+id/txtBirthday"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="1/1/2019"
+                    android:hint="2019-9-19"
                     android:layout_marginTop="14dp"
                     android:textSize="18dp"/>
 
@@ -193,9 +196,10 @@
                     android:id="@+id/txtWeight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:selectAllOnFocus="true"
                     android:hint="99kg"
                     android:textSize="18dp"
-                    android:inputType="number"/>
+                    android:inputType="numberDecimal"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -207,9 +211,10 @@
                     android:id="@+id/txtHeight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:selectAllOnFocus="true"
                     android:hint="99cm"
                     android:textSize="18dp"
-                    android:inputType="number"/>
+                    android:inputType="numberDecimal"/>
 
             </LinearLayout>
 

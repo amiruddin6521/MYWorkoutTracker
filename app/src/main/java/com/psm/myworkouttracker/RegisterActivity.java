@@ -3,7 +3,6 @@ package com.psm.myworkouttracker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +10,8 @@ import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -21,15 +22,22 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.provider.MediaStore;
 import android.widget.Toast;
-
 import com.mikhaellopez.circularimageview.CircularImageView;
-
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -38,11 +46,13 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText txtName, txtEmail, txtPassword, txtWeight, txtHeight;
     private TextView txtBirthday;
     private RadioGroup radGender;
-    private RadioButton radMale, radFemale;
+    private RadioButton radMale;
     private Button btnSave;
     private ImageButton btnCalender;
-    private String userChoosenTask;
     private int mYear, mMonth, mDay;
+    private WebServiceCall wsc = new WebServiceCall();
+    private JSONObject jsnObj = new JSONObject();
+    private String encoded_string, image_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +71,9 @@ public class RegisterActivity extends AppCompatActivity {
         btnCalender = findViewById(R.id.btnCalender);
         radGender = findViewById(R.id.radGender);
 
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        txtBirthday.setHint("e.g. "+date);
+
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                attemptRegister();
             }
         });
 
@@ -81,6 +94,95 @@ public class RegisterActivity extends AppCompatActivity {
                 calenderPicker();
             }
         });
+    }
+
+    //Validation for register form
+    private void attemptRegister() {
+        String email, password, name, weight, height, birthday;
+
+        // Reset errors.
+        txtEmail.setError(null);
+        txtPassword.setError(null);
+        txtName.setError(null);
+        txtWeight.setError(null);
+        txtHeight.setError(null);
+        txtBirthday.setError(null);
+
+        // Store values at the time of the login attempt.
+        email = txtEmail.getText().toString();
+        password = txtPassword.getText().toString();
+        name = txtName.getText().toString();
+        weight = txtWeight.getText().toString();
+        height = txtHeight.getText().toString();
+        birthday = txtBirthday.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password)) {
+            txtPassword.setError(getString(R.string.error_field_required));
+            focusView = txtPassword;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
+            txtPassword.setError(getString(R.string.error_invalid_password));
+            focusView = txtPassword;
+            cancel = true;
+        }
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            txtEmail.setError(getString(R.string.error_field_required));
+            focusView = txtEmail;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            txtEmail.setError(getString(R.string.error_invalid_email));
+            focusView = txtEmail;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(name)) {
+            txtName.setError(getString(R.string.error_field_required));
+            focusView = txtName;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(weight)) {
+            txtWeight.setError(getString(R.string.error_field_required));
+            focusView = txtWeight;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(height)) {
+            txtHeight.setError(getString(R.string.error_field_required));
+            focusView = txtHeight;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(birthday)) {
+            txtBirthday.setError(getString(R.string.error_field_required));
+            focusView = txtBirthday;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Check for an email address and password in database.
+            checkRegisterData();
+        }
+    }
+
+    private boolean isEmailValid(String email) {
+        //TODO: Replace this with your own logic
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() >= 8;
     }
 
     //Get brithday date
@@ -99,7 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
 
-                        txtBirthday.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                        txtBirthday.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
 
                     }
                 }, mYear, mMonth, mDay);
@@ -130,10 +232,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take Photo")) {
-                    userChoosenTask="Take Photo";
                     cameraIntent();
                 } else if (items[item].equals("Choose from Library")) {
-                    userChoosenTask="Choose from Library";
                     galleryIntent();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -173,14 +273,23 @@ public class RegisterActivity extends AppCompatActivity {
 
     //Handle for select from gallery
     private void onSelectFromGalleryResult(Intent data) {
-        Bitmap bm=null;
+        Bitmap bm = null;
+        ByteArrayOutputStream bytes = null;
+        File destination = null;
         if (data != null) {
             try {
                 bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                bytes = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                destination = new File(Environment.getExternalStorageDirectory(),
+                        System.currentTimeMillis() + ".jpg");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        byte[] array = bytes.toByteArray();
+        encoded_string = Base64.encodeToString(array, 0);
+        image_name = destination.getName();
         roundProfile.setImageBitmap(bm);
     }
 
@@ -188,7 +297,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         File destination = new File(Environment.getExternalStorageDirectory(),
                 System.currentTimeMillis() + ".jpg");
         FileOutputStream fo;
@@ -202,6 +311,149 @@ public class RegisterActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        byte[] array = bytes.toByteArray();
+        encoded_string = Base64.encodeToString(array, 0);
+        image_name = destination.getName();
         roundProfile.setImageBitmap(thumbnail);
+    }
+
+    //check valid email
+    public void checkRegisterData() {
+
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            String email;
+            @Override
+            public void run()
+            {
+                email = txtEmail.getText().toString();
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnCheckEmail"));
+                params.add(new BasicNameValuePair("varEmail", email));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    //if fail to get from server, get from local mobile time
+                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
+                    Toast.makeText(RegisterActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            saveRegisterData();
+                            //Toast.makeText(RegisterActivity.this, "You have successfuly registered!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "This email has been used. Please use another email.", Toast.LENGTH_LONG).show();
+                            txtEmail.setFocusable(true);
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    //save register information into database
+    public void saveRegisterData() {
+
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            String email, password, name, bdate, gender, weigth, height;
+            @Override
+            public void run()
+            {
+                email = txtEmail.getText().toString();
+                password = txtPassword.getText().toString();
+                name = txtName.getText().toString();
+                bdate = txtBirthday.getText().toString();
+                gender = getRadioGender();
+                weigth = txtWeight.getText().toString();
+                height = txtHeight.getText().toString();
+
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnRegister"));
+                params.add(new BasicNameValuePair("varEmail", email));
+                params.add(new BasicNameValuePair("varPassword", password));
+                params.add(new BasicNameValuePair("varName", name));
+                params.add(new BasicNameValuePair("varBdate", bdate));
+                params.add(new BasicNameValuePair("varGender", gender));
+                params.add(new BasicNameValuePair("varWeight", weigth));
+                params.add(new BasicNameValuePair("varHeight", height));
+                params.add(new BasicNameValuePair("encoded_string", encoded_string));
+                params.add(new BasicNameValuePair("image_name", image_name));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    //if fail to get from server, get from local mobile time
+                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
+                    Toast.makeText(RegisterActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            Toast.makeText(RegisterActivity.this, "You have successfuly registered!", Toast.LENGTH_LONG).show();
+                            RegisterActivity.this.finish();
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Something wrong!", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    //test insert image
+    public void saveImage() {
+
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnImage"));
+                params.add(new BasicNameValuePair("encoded_string", encoded_string));
+                params.add(new BasicNameValuePair("image_name", image_name));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    //if fail to get from server, get from local mobile time
+                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
+                    Toast.makeText(RegisterActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            Toast.makeText(RegisterActivity.this, "You have successfully upload image!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(RegisterActivity.this, strRespond, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
     }
 }

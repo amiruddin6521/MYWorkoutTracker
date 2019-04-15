@@ -52,6 +52,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
+                    android:selectAllOnFocus="true"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -71,6 +72,7 @@
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
+                    android:selectAllOnFocus="true"
                     android:maxLines="1"
                     android:singleLine="true" />
 

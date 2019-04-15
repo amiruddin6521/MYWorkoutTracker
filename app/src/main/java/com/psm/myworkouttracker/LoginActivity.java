@@ -13,12 +13,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private View mLoginFormView;
     private WebServiceCall wsc = new WebServiceCall();
     private JSONObject jsnObj = new JSONObject();
+    private String email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,14 +75,18 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        final String email = mEmailView.getText().toString();
-        final String password = mPasswordView.getText().toString();
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -106,46 +109,7 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             // Check for an email address and password in database.
-            Runnable run = new Runnable()
-            {
-                String strRespond = "";
-                String name ="";
-                @Override
-                public void run()
-                {
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("selectFn", "fnLogin"));
-                    params.add(new BasicNameValuePair("varEmail", email));
-                    params.add(new BasicNameValuePair("varPassword", password));
-
-                    try{
-                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                        strRespond = jsnObj.getString("respond");
-                        name = jsnObj.getString("name");
-
-                    } catch (JSONException e){
-                        //if fail to get from server, get from local mobile time
-                        String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                        Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
-                    }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(strRespond.equals("True")) {
-                                String strMsg = " Welcome " + name + "!";
-                                Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                }
-            };
-            Thread thr = new Thread(run);
-            thr.start();
+            checkLogin();
         }
     }
 
@@ -198,6 +162,49 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    public void checkLogin() {
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            String name ="";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnLogin"));
+                params.add(new BasicNameValuePair("varEmail", email));
+                params.add(new BasicNameValuePair("varPassword", password));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+                    name = jsnObj.getString("name");
+
+                } catch (JSONException e){
+                    //if fail to get from server, get from local mobile time
+                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
+                    Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            String strMsg = " Welcome " + name + "!";
+                            Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
     }
 }
 
