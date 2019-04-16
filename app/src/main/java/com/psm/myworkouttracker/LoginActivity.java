@@ -193,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
-                            Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("id", id);
                             startActivity(intent);

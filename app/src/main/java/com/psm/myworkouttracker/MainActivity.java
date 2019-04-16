@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity
     private TextView txtName, txtEmail;
     private WebServiceCall wsc = new WebServiceCall();
     private JSONObject jsnObj = new JSONObject();
-    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,17 +48,17 @@ public class MainActivity extends AppCompatActivity
 
         loadProfile();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View header= navigationView.getHeaderView(0);
@@ -78,16 +77,23 @@ public class MainActivity extends AppCompatActivity
         imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this,
-                        "The favorite list would appear on clicking this icon",
-                        Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
             }
         });
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new WorkoutFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_workout);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -123,21 +129,27 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.nav_workout) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new WorkoutFragment()).commit();
+        } else if (id == R.id.nav_exercises) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new ExercisesFragment()).commit();
+        } else if (id == R.id.nav_weighttrack) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new WeightTrackFragment()).commit();
+        } else if (id == R.id.nav_bodytrack) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new BodyTrackFragment()).commit();
+        } else if (id == R.id.nav_setting) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new SettingFragment()).commit();
+        } else if (id == R.id.nav_about) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new AboutFragment()).commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
