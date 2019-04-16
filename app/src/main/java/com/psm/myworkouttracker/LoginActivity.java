@@ -180,8 +180,8 @@ public class LoginActivity extends AppCompatActivity {
                 try{
                     jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                     strRespond = jsnObj.getString("respond");
-                    name = jsnObj.getString("name");
                     id = jsnObj.getString("id");
+                    name = jsnObj.getString("name");
 
                 } catch (JSONException e){
                     //if fail to get from server, get from local mobile time
@@ -193,12 +193,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
-                            String strMsg = " Welcome " + name + "!";
-                            //Toast.makeText(LoginActivity.this, id, Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("id", id);
-                            intent.putExtra("name", name);
-                            intent.putExtra("email", email);
                             startActivity(intent);
                         } else {
                             Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();

@@ -1,9 +1,12 @@
 package com.psm.myworkouttracker;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Base64;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,23 +20,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String id, email, name;
-    //private TextView txtName, txtEmail;
+    private String id;
     private ImageView imageView1;
+    private TextView txtName, txtEmail;
+    private WebServiceCall wsc = new WebServiceCall();
+    private JSONObject jsnObj = new JSONObject();
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get the transferred data from source activity.
+        // Get the id from login activity.
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
-        name = intent.getStringExtra("name");
-        email = intent.getStringExtra("email");
+
+        loadProfile();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,15 +67,22 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View header= navigationView.getHeaderView(0);
-        TextView txtName= header.findViewById(R.id.txtName1);
-        TextView txtEmail= header.findViewById(R.id.txtEmail1);
+        txtName = header.findViewById(R.id.txtName1);
+        txtEmail = header.findViewById(R.id.txtEmail1);
+        imageView1 = header.findViewById(R.id.imageView1);
 
-        txtName.setText(name);
-        txtEmail.setText(email);
+        imageView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,
+                        "The favorite list would appear on clicking this icon",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -119,5 +140,49 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void loadProfile() {
+        Runnable run = new Runnable()
+        {
+            String img64, strRespond, name, email;
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnLoadNavHeader"));
+                params.add(new BasicNameValuePair("_id", id));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    name = jsnObj.getString("name");
+                    email = jsnObj.getString("email");
+                    img64 = jsnObj.getString("encoded");
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    //if fail to get from server, get from local mobile time
+                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
+                    Toast.makeText(MainActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            byte[] data = Base64.decode(img64, Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            imageView1.setImageBitmap(decodedByte);
+                            txtName.setText(name);
+                            txtEmail.setText(email);
+                        } else {
+                            Toast.makeText(MainActivity.this, "Something wrong.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
     }
 }
