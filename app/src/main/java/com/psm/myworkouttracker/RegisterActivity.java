@@ -175,17 +175,19 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    //Validation for email
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
+    //Validation for password
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() >= 8;
     }
 
-    //Get brithday date
+    //Get birthday date
     private void calenderPicker() {
         // Get Current Date
         final Calendar c = Calendar.getInstance();
@@ -224,16 +226,17 @@ public class RegisterActivity extends AppCompatActivity {
 
     //Dialog box with the three options
     private void selectImage() {
-        final CharSequence[] items = { "Take Photo", "Choose from Library",
+        final CharSequence[] items = { "Take new picture", "Choose from library",
                 "Cancel" };
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
-        builder.setTitle("Add Photo!");
+        builder.setTitle("Add Picture!");
+        builder.setIcon(R.drawable.ic_menu_camera);
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                if (items[item].equals("Take Photo")) {
+                if (items[item].equals("Take new picture")) {
                     cameraIntent();
-                } else if (items[item].equals("Choose from Library")) {
+                } else if (items[item].equals("Choose from library")) {
                     galleryIntent();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -317,7 +320,7 @@ public class RegisterActivity extends AppCompatActivity {
         roundProfile.setImageBitmap(thumbnail);
     }
 
-    //check valid email
+    //Check valid email
     public void checkRegisterData() {
 
         Runnable run = new Runnable()
@@ -337,9 +340,7 @@ public class RegisterActivity extends AppCompatActivity {
                     strRespond = jsnObj.getString("respond");
 
                 } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(RegisterActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
 
                 runOnUiThread(new Runnable() {
@@ -360,7 +361,7 @@ public class RegisterActivity extends AppCompatActivity {
         thr.start();
     }
 
-    //save register information into database
+    //Save register information into database
     public void saveRegisterData() {
 
         Runnable run = new Runnable()
@@ -395,59 +396,17 @@ public class RegisterActivity extends AppCompatActivity {
                     strRespond = jsnObj.getString("respond");
 
                 } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(RegisterActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
-                            Toast.makeText(RegisterActivity.this, "You have successfuly registered!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
                             RegisterActivity.this.finish();
                         } else {
                             Toast.makeText(RegisterActivity.this, "Something wrong!", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
-    }
-
-    //test insert image
-    public void saveImage() {
-
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            @Override
-            public void run()
-            {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnImage"));
-                params.add(new BasicNameValuePair("encoded_string", encoded_string));
-                params.add(new BasicNameValuePair("image_name", image_name));
-
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
-
-                } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(RegisterActivity.this, strMsg, Toast.LENGTH_LONG).show();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            Toast.makeText(RegisterActivity.this, "You have successfully upload image!", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, strRespond, Toast.LENGTH_LONG).show();
                         }
                     }
                 });

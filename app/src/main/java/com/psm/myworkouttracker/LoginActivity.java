@@ -25,7 +25,6 @@ import java.util.List;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    // UI references.
     private EditText mEmailView, mPasswordView;
     private Button btnLogin, btnRegister;
     private View mProgressView;
@@ -113,16 +112,19 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    //Go to register page
     private void attempRegister(){
         Intent intent = new Intent(this,RegisterActivity.class);
         startActivity(intent);
     }
 
+    //Validation for email
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
+    //Validation for password
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() >= 8;
@@ -164,6 +166,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    //Check login information
     public void checkLogin() {
         Runnable run = new Runnable()
         {
@@ -184,9 +187,7 @@ public class LoginActivity extends AppCompatActivity {
                     name = jsnObj.getString("name");
 
                 } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(LoginActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
 
                 runOnUiThread(new Runnable() {

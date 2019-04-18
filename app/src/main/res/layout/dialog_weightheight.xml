@@ -6,19 +6,21 @@
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Edit value"
-            android:textStyle="bold"
-            android:textSize="18dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Edit value"
+        android:textStyle="bold"
+        android:textSize="18dp"/>
 
-        <EditText
-            android:id="@+id/edtUpdate"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"/>
+    <EditText
+        android:id="@+id/edtUpdate"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:selectAllOnFocus="true"
+        android:layout_margin="4dp"/>
 
     <Button
         android:id="@+id/btnSave"

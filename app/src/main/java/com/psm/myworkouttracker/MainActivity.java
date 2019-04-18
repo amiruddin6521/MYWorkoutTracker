@@ -197,4 +197,10 @@ public class MainActivity extends AppCompatActivity
         Thread thr = new Thread(run);
         thr.start();
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadProfile();
+    }
 }

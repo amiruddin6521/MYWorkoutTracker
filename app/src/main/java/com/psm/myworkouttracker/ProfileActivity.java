@@ -1,20 +1,28 @@
 package com.psm.myworkouttracker;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +31,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -35,13 +49,16 @@ public class ProfileActivity extends AppCompatActivity {
     private WebServiceCall wsc = new WebServiceCall();
     private JSONObject jsnObj = new JSONObject();
     private Dialog dialog;
+    private EditText edtUpdate, edtCurrPass, edtNewPass;
+    private Button btnSave;
+    private RadioGroup radGender;
+    private RadioButton radMale, radFemale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Get the id from login activity.
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
 
@@ -49,7 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ProfileActivity.this,"Edit Button. ID = "+id, Toast.LENGTH_SHORT).show();
+                selectImage();
             }
         });
 
@@ -75,61 +92,366 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog = new Dialog(ProfileActivity.this);
                 dialog.setCancelable(true);
-                dialog.setContentView(R.layout.dialog_templete);
-                final EditText edtUpdate = dialog.findViewById(R.id.edtUpdate);
-                Button btnSave = dialog.findViewById(R.id.btnSave);
+                dialog.setContentView(R.layout.dialog_name);
+                edtUpdate = dialog.findViewById(R.id.edtUpdate);
+                btnSave = dialog.findViewById(R.id.btnSave);
+                edtUpdate.setText(txtName.getText().toString());
                 dialog.show();
-
 
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(ProfileActivity.this, "Saved",Toast.LENGTH_SHORT).show();
-                        String name = edtUpdate.getText().toString();
+                        boolean cancel = false;
+                        View focusView = null;
+                        String data = edtUpdate.getText().toString();
                         String attr = "name";
-                        updateData(id,attr,name);
+                        if (TextUtils.isEmpty(data)) {
+                            edtUpdate.setError(getString(R.string.error_field_required));
+                            focusView = edtUpdate;
+                            cancel = true;
+                        }
+                        if (cancel) {
+                            focusView.requestFocus();
+                        } else {
+
+                            updateData(id,attr,data);
+                            dialog.cancel();
+                        }
                     }
                 });
-
             }
         });
 
         edtDob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                calenderPicker();
             }
         });
 
         edtWeight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog = new Dialog(ProfileActivity.this);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.dialog_weightheight);
+                edtUpdate = dialog.findViewById(R.id.edtUpdate);
+                btnSave = dialog.findViewById(R.id.btnSave);
+                edtUpdate.setText(txtWeight.getText().toString());
+                dialog.show();
 
+                btnSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        boolean cancel = false;
+                        View focusView = null;
+                        String data = edtUpdate.getText().toString();
+                        String attr = "weight";
+                        if (TextUtils.isEmpty(data)) {
+                            edtUpdate.setError(getString(R.string.error_field_required));
+                            focusView = edtUpdate;
+                            cancel = true;
+                        }
+                        if (cancel) {
+                            focusView.requestFocus();
+                        } else {
+
+                            updateData(id,attr,data);
+                            dialog.cancel();
+                        }
+                    }
+                });
             }
         });
 
         edtHeight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog = new Dialog(ProfileActivity.this);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.dialog_weightheight);
+                edtUpdate = dialog.findViewById(R.id.edtUpdate);
+                btnSave = dialog.findViewById(R.id.btnSave);
+                edtUpdate.setText(txtHeight.getText().toString());
+                dialog.show();
 
+                btnSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        boolean cancel = false;
+                        View focusView = null;
+                        String data = edtUpdate.getText().toString();
+                        String attr = "height";
+                        if (TextUtils.isEmpty(data)) {
+                            edtUpdate.setError(getString(R.string.error_field_required));
+                            focusView = edtUpdate;
+                            cancel = true;
+                        }
+                        if (cancel) {
+                            focusView.requestFocus();
+                        } else {
+
+                            updateData(id,attr,data);
+                            dialog.cancel();
+                        }
+                    }
+                });
             }
         });
 
         edtGender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog = new Dialog(ProfileActivity.this);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.dialog_gender);
+                radGender = dialog.findViewById(R.id.radGender);
+                radMale = dialog.findViewById(R.id.radMale);
+                radFemale = dialog.findViewById(R.id.radFemale);
+                btnSave = dialog.findViewById(R.id.btnSave);
+                String gend = txtGender.getText().toString();
+                if(gend.equals("Male")) {
+                    radMale.setChecked(true);
+                } else {
+                    radFemale.setChecked(true);
+                }
+                dialog.show();
 
+                btnSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int selectedId = radGender.getCheckedRadioButtonId();
+                        radMale = dialog.findViewById(selectedId);
+                        String data = radMale.getText().toString();
+                        String attr = "gender";
+                        updateData(id,attr,data);
+                        dialog.cancel();
+                    }
+                });
             }
         });
 
         edtPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog = new Dialog(ProfileActivity.this);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.dialog_password);
+                edtCurrPass = dialog.findViewById(R.id.edtCurrPass);
+                edtNewPass = dialog.findViewById(R.id.edtNewPass);
+                btnSave = dialog.findViewById(R.id.btnSave);
+                dialog.show();
 
+                btnSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        boolean cancel = false;
+                        View focusView = null;
+                        String data1 = edtCurrPass.getText().toString();
+                        String data2 = edtNewPass.getText().toString();
+                        if (TextUtils.isEmpty(data2)) {
+                            edtNewPass.setError(getString(R.string.error_field_required));
+                            focusView = edtNewPass;
+                            cancel = true;
+                        } else if (!isPasswordValid(data2)) {
+                            edtNewPass.setError(getString(R.string.error_invalid_password));
+                            focusView = edtNewPass;
+                            cancel = true;
+                        }
+                        if (TextUtils.isEmpty(data1)) {
+                            edtCurrPass.setError(getString(R.string.error_field_required));
+                            focusView = edtCurrPass;
+                            cancel = true;
+                        } else if (!isPasswordValid(data1)) {
+                            edtCurrPass.setError(getString(R.string.error_invalid_password));
+                            focusView = edtCurrPass;
+                            cancel = true;
+                        }
+                        if (cancel) {
+                            focusView.requestFocus();
+                        } else {
+                            getCurrPassword(data1,data2);
+                            dialog.cancel();
+                        }
+                    }
+                });
             }
         });
     }
 
+    //Validation for password
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() >= 8;
+    }
+
+    //Dialog box with the three options
+    private void selectImage() {
+        final CharSequence[] items = { "Take new picture", "Choose from library",
+                "Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+        builder.setTitle("Update Picture!");
+        builder.setIcon(R.drawable.ic_menu_camera);
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take new picture")) {
+                    cameraIntent();
+                } else if (items[item].equals("Choose from library")) {
+                    galleryIntent();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    //Calling Implicit Intent to open the camera application on user's phone
+    private void cameraIntent()
+    {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 1);
+    }
+
+    //Calling an implicit intent to open the gallery
+    private void galleryIntent()
+    {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        startActivityForResult(Intent.createChooser(intent, "Select File"),2);
+    }
+
+    //Handle the result we have received by calling startActivityForResult()
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == 2)
+                onSelectFromGalleryResult(data);
+            else if (requestCode == 1)
+                onCaptureImageResult(data);
+        }
+    }
+
+    //Handle for select from gallery
+    private void onSelectFromGalleryResult(Intent data) {
+        Bitmap bm = null;
+        ByteArrayOutputStream bytes = null;
+        File destination = null;
+        if (data != null) {
+            try {
+                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                bytes = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                destination = new File(Environment.getExternalStorageDirectory(),
+                        System.currentTimeMillis() + ".jpg");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        byte[] array = bytes.toByteArray();
+        String encoded_string = Base64.encodeToString(array, 0);
+        String image_name = destination.getName();
+        updateImage(encoded_string, image_name);
+        imgPhoto.setImageBitmap(bm);
+    }
+
+    //Handle for image capture from camera
+    private void onCaptureImageResult(Intent data) {
+        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        File destination = new File(Environment.getExternalStorageDirectory(),
+                System.currentTimeMillis() + ".jpg");
+        FileOutputStream fo;
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        byte[] array = bytes.toByteArray();
+        String encoded_string = Base64.encodeToString(array, 0);
+        String image_name = destination.getName();
+        updateImage(encoded_string, image_name);
+        imgPhoto.setImageBitmap(thumbnail);
+    }
+
+    //Dialog pick dob
+    private void calenderPicker() {
+        // Get Current Date
+        final Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+
+                        String dob = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+                        saveDob(dob);
+
+                    }
+                }, mYear, mMonth, mDay);
+        datePickerDialog.show();
+    }
+
+    //Save dob date
+    private void saveDob(String data) {
+        String attr = "bdate";
+        updateData(id,attr,data);
+    }
+
+    //Update image
+    public void updateImage(final String encoded_string, final String image_name) {
+
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnUpdateImage"));
+                params.add(new BasicNameValuePair("id", id));
+                params.add(new BasicNameValuePair("encoded_string", encoded_string));
+                params.add(new BasicNameValuePair("image_name", image_name));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            Toast.makeText(ProfileActivity.this, "Picture successfully changed!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(ProfileActivity.this, strRespond, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    //Load all data from user profile
     public void loadProfile() {
         Runnable run = new Runnable()
         {
@@ -154,9 +476,7 @@ public class ProfileActivity extends AppCompatActivity {
                     strRespond = jsnObj.getString("respond");
 
                 } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(ProfileActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
 
                 runOnUiThread(new Runnable() {
@@ -184,7 +504,8 @@ public class ProfileActivity extends AppCompatActivity {
         thr.start();
     }
 
-    public void updateData(final String id, final String attr, final String data) {
+    //Update specific data
+    public void updateData(final String idS, final String attrS, final String data) {
         Runnable run = new Runnable()
         {
             String strRespond = "";
@@ -193,8 +514,8 @@ public class ProfileActivity extends AppCompatActivity {
             {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("selectFn", "fnUpdateProfile"));
-                params.add(new BasicNameValuePair("varId", id));
-                params.add(new BasicNameValuePair("varAttr", attr));
+                params.add(new BasicNameValuePair("varId", idS));
+                params.add(new BasicNameValuePair("varAttr", attrS));
                 params.add(new BasicNameValuePair("varData", data));
 
                 try{
@@ -202,18 +523,92 @@ public class ProfileActivity extends AppCompatActivity {
                     strRespond = jsnObj.getString("respond");
 
                 } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(ProfileActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
-                            Toast.makeText(ProfileActivity.this, "You have successfully upload image!", Toast.LENGTH_LONG).show();
+                            loadProfile();
+                            Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(ProfileActivity.this, strRespond, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    //Change new password
+    public void updatePassword(final String data) {
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnUpdatePassword"));
+                params.add(new BasicNameValuePair("varId", id));
+                params.add(new BasicNameValuePair("varData", data));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            loadProfile();
+                            Toast.makeText(ProfileActivity.this, "Password successfully changed!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "Password failed to change.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    //Check current password
+    public void getCurrPassword(final String currPass, final String newPass) {
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnGetCurrPassword"));
+                params.add(new BasicNameValuePair("varId", id));
+                params.add(new BasicNameValuePair("varPassword", currPass));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            updatePassword(newPass);
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "Wrong password entered.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
