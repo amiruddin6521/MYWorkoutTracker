@@ -482,7 +482,15 @@ public class ProfileActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(strRespond.equals("True")) {
+                        if(strRespond.equals("True") && img64.equals("")) {
+                            txtEmail.setText(email);
+                            txtName.setText(name);
+                            txtDob.setText(dob);
+                            txtWeight.setText(weight);
+                            txtHeight.setText(height);
+                            txtGender.setText(gender);
+                            txtPdate.setText(passworddate);
+                        } else if(strRespond.equals("True")){
                             txtEmail.setText(email);
                             txtName.setText(name);
                             txtDob.setText(dob);

@@ -173,15 +173,16 @@ public class MainActivity extends AppCompatActivity
                     strRespond = jsnObj.getString("respond");
 
                 } catch (JSONException e){
-                    //if fail to get from server, get from local mobile time
-                    String strMsg = "No internet connection, please turn on your Mobile Data/WiFi.";
-                    Toast.makeText(MainActivity.this, strMsg, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(strRespond.equals("True")) {
+                        if(strRespond.equals("True") && img64.equals("")) {
+                            txtName.setText(name);
+                            txtEmail.setText(email);
+                        } else if(strRespond.equals("True")){
                             byte[] data = Base64.decode(img64, Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
                             imageView1.setImageBitmap(decodedByte);
