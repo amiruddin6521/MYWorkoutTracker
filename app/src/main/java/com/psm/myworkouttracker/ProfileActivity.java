@@ -320,7 +320,7 @@ public class ProfileActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        intent.setAction(Intent.ACTION_PICK);//
         startActivityForResult(Intent.createChooser(intent, "Select File"),2);
     }
 
@@ -442,7 +442,7 @@ public class ProfileActivity extends AppCompatActivity {
                         if(strRespond.equals("True")) {
                             Toast.makeText(ProfileActivity.this, "Picture successfully changed!", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(ProfileActivity.this, strRespond, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, "Picture failed to change.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -480,7 +480,7 @@ public class ProfileActivity extends AppCompatActivity {
                             loadProfile();
                             Toast.makeText(ProfileActivity.this, "Picture successfully removed!", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(ProfileActivity.this, strRespond, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, "There is no picture to remove.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
