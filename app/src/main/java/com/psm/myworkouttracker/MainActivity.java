@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Base64;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,12 +17,10 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,6 +178,7 @@ public class MainActivity extends AppCompatActivity
                         if(strRespond.equals("True") && img64.equals("")) {
                             txtName.setText(name);
                             txtEmail.setText(email);
+                            imageView1.setImageResource(R.drawable.person);
                         } else if(strRespond.equals("True")){
                             byte[] data = Base64.decode(img64, Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);

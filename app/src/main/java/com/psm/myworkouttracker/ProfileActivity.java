@@ -25,12 +25,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -288,7 +286,7 @@ public class ProfileActivity extends AppCompatActivity {
     //Dialog box with the three options
     private void selectImage() {
         final CharSequence[] items = { "Take new picture", "Choose from library",
-                "Cancel" };
+                "Delete current picture", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
         builder.setTitle("Update Picture!");
         builder.setIcon(R.drawable.ic_menu_camera);
@@ -299,6 +297,9 @@ public class ProfileActivity extends AppCompatActivity {
                     cameraIntent();
                 } else if (items[item].equals("Choose from library")) {
                     galleryIntent();
+                } else if (items[item].equals("Delete current picture")) {
+                    deleteImage();
+                    dialog.dismiss();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
                 }
@@ -451,6 +452,44 @@ public class ProfileActivity extends AppCompatActivity {
         thr.start();
     }
 
+    //Delete image
+    public void deleteImage() {
+
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnDeleteImage"));
+                params.add(new BasicNameValuePair("id", id));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            loadProfile();
+                            Toast.makeText(ProfileActivity.this, "Picture successfully removed!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(ProfileActivity.this, strRespond, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
     //Load all data from user profile
     public void loadProfile() {
         Runnable run = new Runnable()
@@ -490,6 +529,7 @@ public class ProfileActivity extends AppCompatActivity {
                             txtHeight.setText(height);
                             txtGender.setText(gender);
                             txtPdate.setText(passworddate);
+                            imgPhoto.setImageResource(R.drawable.person);
                         } else if(strRespond.equals("True")){
                             txtEmail.setText(email);
                             txtName.setText(name);

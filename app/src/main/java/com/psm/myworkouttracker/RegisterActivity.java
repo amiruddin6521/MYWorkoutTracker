@@ -227,7 +227,7 @@ public class RegisterActivity extends AppCompatActivity {
     //Dialog box with the three options
     private void selectImage() {
         final CharSequence[] items = { "Take new picture", "Choose from library",
-                "Cancel" };
+                "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
         builder.setTitle("Add Picture!");
         builder.setIcon(R.drawable.ic_menu_camera);
