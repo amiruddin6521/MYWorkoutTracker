@@ -8,9 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -34,13 +36,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private String id;
+    private String id, currentPhotoPath;
     private ImageView imgPhoto;
     private TextView txtEmail, txtName, txtDob, txtWeight, txtHeight, txtGender, txtPdate;
     private ImageButton edtName, edtDob, edtWeight, edtHeight, edtGender, edtPassword;
@@ -294,7 +298,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take new picture")) {
-                    cameraIntent();
+                    //cameraIntent();
+                    dispatchTakePictureIntent();
                 } else if (items[item].equals("Choose from library")) {
                     galleryIntent();
                 } else if (items[item].equals("Delete current picture")) {
@@ -309,11 +314,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     //Calling Implicit Intent to open the camera application on user's phone
-    private void cameraIntent()
+    /*private void cameraIntent()
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, 1);
-    }
+    }*/
 
     //Calling an implicit intent to open the gallery
     private void galleryIntent()
@@ -324,16 +329,85 @@ public class ProfileActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select File"),2);
     }
 
+    //Create image file name and file path
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    //Take picture and transfer picture data into intent
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.psm.myworkouttracker.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, 1);
+            }
+        }
+    }
+
     //Handle the result we have received by calling startActivityForResult()
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
+        Bitmap bitmap = null;
+        ByteArrayOutputStream bytes = null;
+        File destination = null;
+        try {
+            switch (requestCode) {
+                case 1: {
+                    if (resultCode == RESULT_OK) {
+                        File file = new File(currentPhotoPath);
+                        bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.fromFile(file));
+                        if (bitmap != null) {
+                            bytes = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                            destination = new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis() + ".jpg");
+                            byte[] array = bytes.toByteArray();
+                            String encoded_string = Base64.encodeToString(array, 0);
+                            String image_name = destination.getName();
+                            updateImage(encoded_string, image_name);
+                        }
+                    }
+                    break;
+                }
+                case 2: {
+                    onSelectFromGalleryResult(data);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /*if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 2)
                 onSelectFromGalleryResult(data);
             else if (requestCode == 1)
                 onCaptureImageResult(data);
-        }
+        }*/
     }
 
     //Handle for select from gallery
@@ -360,7 +434,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     //Handle for image capture from camera
-    private void onCaptureImageResult(Intent data) {
+    /*private void onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -382,7 +456,7 @@ public class ProfileActivity extends AppCompatActivity {
         String image_name = destination.getName();
         updateImage(encoded_string, image_name);
         imgPhoto.setImageBitmap(thumbnail);
-    }
+    }*/
 
     //Dialog pick dob
     private void calenderPicker() {
@@ -440,6 +514,7 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
+                            loadProfile();
                             Toast.makeText(ProfileActivity.this, "Picture successfully changed!", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(ProfileActivity.this, "Picture failed to change.", Toast.LENGTH_LONG).show();

@@ -6,8 +6,10 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -52,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
     private int mYear, mMonth, mDay;
     private WebServiceCall wsc = new WebServiceCall();
     private JSONObject jsnObj = new JSONObject();
-    private String encoded_string, image_name;
+    private String encoded_string, image_name, currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,7 +237,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take new picture")) {
-                    cameraIntent();
+                    //cameraIntent();
+                    dispatchTakePictureIntent();
                 } else if (items[item].equals("Choose from library")) {
                     galleryIntent();
                 } else if (items[item].equals("Cancel")) {
@@ -247,11 +250,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     //Calling Implicit Intent to open the camera application on user's phone
-    private void cameraIntent()
+    /*private void cameraIntent()
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, 1);
-    }
+    }*/
 
     //Calling an implicit intent to open the gallery
     private void galleryIntent()
@@ -262,16 +265,80 @@ public class RegisterActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select File"),2);
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.psm.myworkouttracker.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, 1);
+            }
+        }
+    }
+
     //Handle the result we have received by calling startActivityForResult()
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
+        try {
+            switch (requestCode) {
+                case 1: {
+                    if (resultCode == RESULT_OK) {
+                        File file = new File(currentPhotoPath);
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.fromFile(file));
+                        if (bitmap != null) {
+                            roundProfile.setImageBitmap(bitmap);
+                            ByteArrayOutputStream bytes = null;
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                            File fileName = new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis() + ".jpg");
+                            byte[] array = bytes.toByteArray();
+                            encoded_string = Base64.encodeToString(array, 0);
+                            image_name = fileName.getName();
+                        }
+                    }
+                    break;
+                }
+                case 2: {
+                    onSelectFromGalleryResult(data);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /*if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 2)
                 onSelectFromGalleryResult(data);
             else if (requestCode == 1)
                 onCaptureImageResult(data);
-        }
+        }*/
     }
 
     //Handle for select from gallery
@@ -297,7 +364,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     //Handle for image capture from camera
-    private void onCaptureImageResult(Intent data) {
+    /*private void onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -318,7 +385,7 @@ public class RegisterActivity extends AppCompatActivity {
         encoded_string = Base64.encodeToString(array, 0);
         image_name = destination.getName();
         roundProfile.setImageBitmap(thumbnail);
-    }
+    }*/
 
     //Check valid email
     public void checkRegisterData() {
