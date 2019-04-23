@@ -375,7 +375,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Bitmap bitmap = null;
         ByteArrayOutputStream bytes = null;
-        File destination = null;
+        File fileName = null;
         try {
             switch (requestCode) {
                 case 1: {
@@ -385,10 +385,10 @@ public class ProfileActivity extends AppCompatActivity {
                         if (bitmap != null) {
                             bytes = new ByteArrayOutputStream();
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                            destination = new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis() + ".jpg");
+                            fileName = new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis() + ".jpg");
                             byte[] array = bytes.toByteArray();
                             String encoded_string = Base64.encodeToString(array, 0);
-                            String image_name = destination.getName();
+                            String image_name = fileName.getName();
                             updateImage(encoded_string, image_name);
                         }
                     }
@@ -412,15 +412,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     //Handle for select from gallery
     private void onSelectFromGalleryResult(Intent data) {
-        Bitmap bm = null;
+        Bitmap bitmap = null;
         ByteArrayOutputStream bytes = null;
-        File destination = null;
+        File fileName = null;
         if (data != null) {
             try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
                 bytes = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                destination = new File(Environment.getExternalStorageDirectory(),
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                fileName = new File(Environment.getExternalStorageDirectory(),
                         System.currentTimeMillis() + ".jpg");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -428,9 +428,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
         byte[] array = bytes.toByteArray();
         String encoded_string = Base64.encodeToString(array, 0);
-        String image_name = destination.getName();
+        String image_name = fileName.getName();
         updateImage(encoded_string, image_name);
-        imgPhoto.setImageBitmap(bm);
     }
 
     //Handle for image capture from camera

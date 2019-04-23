@@ -3,6 +3,7 @@ package com.psm.myworkouttracker;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 import android.provider.MediaStore;
 import android.widget.Toast;
 import com.mikhaellopez.circularimageview.CircularImageView;
+import com.theartofdev.edmodo.cropper.CropImage;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -86,7 +89,8 @@ public class RegisterActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptRegister();
+                //attemptRegister();
+                Toast.makeText(RegisterActivity.this,image_name,Toast.LENGTH_LONG).show();
             }
         });
 
@@ -261,7 +265,7 @@ public class RegisterActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_PICK);//
+        intent.setAction(Intent.ACTION_PICK);//ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(intent, "Select File"),2);
     }
 
@@ -307,7 +311,25 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                roundProfile.setImageURI(resultUri);
+                //Toast.makeText(RegisterActivity.this,image_name,Toast.LENGTH_LONG).show();
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        } else if (requestCode == 2) {
+            Uri selectedImageUri = data.getData();
+            CropImage.activity(selectedImageUri).start(this);
+        } else if (requestCode == 1) {
+            File file = new File(currentPhotoPath);
+            Uri selectedImageUri = Uri.fromFile(file);
+            CropImage.activity(selectedImageUri).start(this);
+        }
+
+        /*try {
             switch (requestCode) {
                 case 1: {
                     if (resultCode == RESULT_OK) {
@@ -331,7 +353,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         /*if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 2)
@@ -353,6 +375,7 @@ public class RegisterActivity extends AppCompatActivity {
                 bm.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 destination = new File(Environment.getExternalStorageDirectory(),
                         System.currentTimeMillis() + ".jpg");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -360,7 +383,16 @@ public class RegisterActivity extends AppCompatActivity {
         byte[] array = bytes.toByteArray();
         encoded_string = Base64.encodeToString(array, 0);
         image_name = destination.getName();
-        roundProfile.setImageBitmap(bm);
+        //roundProfile.setImageBitmap(bm);
+        Uri selectedImageUri = data.getData();
+        CropImage.activity(selectedImageUri).start(this);
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
     //Handle for image capture from camera
