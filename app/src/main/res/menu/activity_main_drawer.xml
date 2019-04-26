@@ -20,6 +20,10 @@
             android:id="@+id/nav_bodytrack"
             android:icon="@drawable/ic_menu_manage"
             android:title="Body Track" />
+        <item
+            android:id="@+id/nav_bmitrack"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="BMI Track" />
     </group>
 
     <item android:title="Others">

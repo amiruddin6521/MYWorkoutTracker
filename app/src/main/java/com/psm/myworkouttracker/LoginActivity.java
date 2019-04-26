@@ -3,7 +3,9 @@ package com.psm.myworkouttracker;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
@@ -198,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra("id", id);
                             startActivity(intent);
+                            LoginActivity.this.finish();
                         } else {
                             Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
                         }
@@ -208,5 +211,6 @@ public class LoginActivity extends AppCompatActivity {
         Thread thr = new Thread(run);
         thr.start();
     }
+
 }
 

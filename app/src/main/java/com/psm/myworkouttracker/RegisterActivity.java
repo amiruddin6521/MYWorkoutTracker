@@ -89,8 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //attemptRegister();
-                Toast.makeText(RegisterActivity.this,image_name,Toast.LENGTH_LONG).show();
+                attemptRegister();
             }
         });
 
@@ -311,12 +310,26 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Bitmap bitmap = null;
+        ByteArrayOutputStream bytes = null;
+        File fileName = null;
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
                 roundProfile.setImageURI(resultUri);
-                //Toast.makeText(RegisterActivity.this,image_name,Toast.LENGTH_LONG).show();
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
+                    bytes = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    fileName = new File(Environment.getExternalStorageDirectory(),
+                            System.currentTimeMillis() + ".jpg");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                byte[] array = bytes.toByteArray();
+                encoded_string = Base64.encodeToString(array, 0);
+                image_name = fileName.getName();
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
@@ -364,7 +377,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     //Handle for select from gallery
-    private void onSelectFromGalleryResult(Intent data) {
+    /*private void onSelectFromGalleryResult(Intent data) {
         Bitmap bm = null;
         ByteArrayOutputStream bytes = null;
         File destination = null;
@@ -384,16 +397,7 @@ public class RegisterActivity extends AppCompatActivity {
         encoded_string = Base64.encodeToString(array, 0);
         image_name = destination.getName();
         //roundProfile.setImageBitmap(bm);
-        Uri selectedImageUri = data.getData();
-        CropImage.activity(selectedImageUri).start(this);
-    }
-
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }
+    }*/
 
     //Handle for image capture from camera
     /*private void onCaptureImageResult(Intent data) {
@@ -447,7 +451,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void run() {
                         if(strRespond.equals("True")) {
                             saveRegisterData();
-                            //Toast.makeText(RegisterActivity.this, "You have successfuly registered!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(RegisterActivity.this, "This email has been used. Please use another email.", Toast.LENGTH_LONG).show();
                             txtEmail.setFocusable(true);

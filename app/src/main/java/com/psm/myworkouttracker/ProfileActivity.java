@@ -27,6 +27,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.theartofdev.edmodo.cropper.CropImage;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -376,7 +379,37 @@ public class ProfileActivity extends AppCompatActivity {
         Bitmap bitmap = null;
         ByteArrayOutputStream bytes = null;
         File fileName = null;
-        try {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                imgPhoto.setImageURI(resultUri);
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
+                    bytes = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    fileName = new File(Environment.getExternalStorageDirectory(),
+                            System.currentTimeMillis() + ".jpg");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                byte[] array = bytes.toByteArray();
+                String encoded_string = Base64.encodeToString(array, 0);
+                String image_name = fileName.getName();
+                updateImage(encoded_string, image_name);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        } else if (requestCode == 2) {
+            Uri selectedImageUri = data.getData();
+            CropImage.activity(selectedImageUri).start(this);
+        } else if (requestCode == 1) {
+            File file = new File(currentPhotoPath);
+            Uri selectedImageUri = Uri.fromFile(file);
+            CropImage.activity(selectedImageUri).start(this);
+        }
+
+        /*try {
             switch (requestCode) {
                 case 1: {
                     if (resultCode == RESULT_OK) {
@@ -400,7 +433,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         /*if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 2)

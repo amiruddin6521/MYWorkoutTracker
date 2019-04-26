@@ -1,9 +1,11 @@
 package com.psm.myworkouttracker;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -93,7 +95,27 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder alertdialog=new AlertDialog.Builder(this);
+            alertdialog.setTitle("Warning");
+            alertdialog.setMessage("Are you sure you want to logout?");
+            alertdialog.setPositiveButton("yes", new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent=new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                    MainActivity.this.finish();
+                }
+            });
+
+            alertdialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alert=alertdialog.create();
+            alertdialog.show();
         }
     }
 
@@ -135,6 +157,9 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new WeightTrackFragment()).commit();
         } else if (id == R.id.nav_bodytrack) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new BodyTrackFragment()).commit();
+        } else if (id == R.id.nav_bmitrack) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new BodyTrackFragment()).commit();
         } else if (id == R.id.nav_setting) {
