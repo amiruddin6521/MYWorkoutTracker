@@ -170,6 +170,7 @@ public class LoginActivity extends AppCompatActivity {
 
     //Check login information
     public void checkLogin() {
+        showProgress(true);
         Runnable run = new Runnable()
         {
             String strRespond = "";
@@ -202,6 +203,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             LoginActivity.this.finish();
                         } else {
+                            showProgress(false);
                             Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
                         }
                     }

@@ -397,6 +397,8 @@ public class RegisterActivity extends AppCompatActivity {
         encoded_string = Base64.encodeToString(array, 0);
         image_name = destination.getName();
         //roundProfile.setImageBitmap(bm);
+        Uri selectedImageUri = data.getData();
+        CropImage.activity(selectedImageUri).start(this);
     }*/
 
     //Handle for image capture from camera
@@ -451,7 +453,6 @@ public class RegisterActivity extends AppCompatActivity {
                     public void run() {
                         if(strRespond.equals("True")) {
                             saveRegisterData();
-                            Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(RegisterActivity.this, "This email has been used. Please use another email.", Toast.LENGTH_LONG).show();
                             txtEmail.setFocusable(true);

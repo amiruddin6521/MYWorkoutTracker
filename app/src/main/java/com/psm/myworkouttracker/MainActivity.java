@@ -95,27 +95,26 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            AlertDialog.Builder alertdialog=new AlertDialog.Builder(this);
-            alertdialog.setTitle("Warning");
-            alertdialog.setMessage("Are you sure you want to logout?");
-            alertdialog.setPositiveButton("yes", new DialogInterface.OnClickListener(){
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+            alertDialog.setTitle("Exit Application");
+            alertDialog.setMessage("Are you sure you want to logout?");
+            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent intent=new Intent(MainActivity.this,LoginActivity.class);
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                     MainActivity.this.finish();
                 }
             });
 
-            alertdialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                 }
             });
-
-            AlertDialog alert=alertdialog.create();
-            alertdialog.show();
+            alertDialog.show();
         }
     }
 
@@ -157,9 +156,6 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new WeightTrackFragment()).commit();
         } else if (id == R.id.nav_bodytrack) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new BodyTrackFragment()).commit();
-        } else if (id == R.id.nav_bmitrack) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new BodyTrackFragment()).commit();
         } else if (id == R.id.nav_setting) {
@@ -211,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                             txtName.setText(name);
                             txtEmail.setText(email);
                         } else {
-                            Toast.makeText(MainActivity.this, "Something wrong.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

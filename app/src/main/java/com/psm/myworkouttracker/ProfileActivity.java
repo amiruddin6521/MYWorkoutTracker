@@ -1,5 +1,8 @@
 package com.psm.myworkouttracker;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -9,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -58,6 +62,8 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnSave;
     private RadioGroup radGender;
     private RadioButton radMale, radFemale;
+    private View mProgressView, mProfileFormView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +95,8 @@ public class ProfileActivity extends AppCompatActivity {
         edtHeight = findViewById(R.id.edtHeight);
         edtGender = findViewById(R.id.edtGender);
         edtPassword = findViewById(R.id.edtPassword);
+        mProgressView = findViewById(R.id.profile_progress);
+        mProfileFormView = findViewById(R.id.profile_form);
 
         loadProfile();
 
@@ -262,6 +270,10 @@ public class ProfileActivity extends AppCompatActivity {
                             edtNewPass.setError(getString(R.string.error_invalid_password));
                             focusView = edtNewPass;
                             cancel = true;
+                        } else if (data2.equals(data1)) {
+                            edtNewPass.setError(getString(R.string.error_same_password));
+                            focusView = edtNewPass;
+                            cancel = true;
                         }
                         if (TextUtils.isEmpty(data1)) {
                             edtCurrPass.setError(getString(R.string.error_field_required));
@@ -282,6 +294,42 @@ public class ProfileActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mProfileFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mProfileFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProfileFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProfileFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 
     //Validation for password
@@ -307,6 +355,7 @@ public class ProfileActivity extends AppCompatActivity {
                     galleryIntent();
                 } else if (items[item].equals("Delete current picture")) {
                     deleteImage();
+                    imgPhoto.setImageResource(R.drawable.person);
                     dialog.dismiss();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -328,7 +377,7 @@ public class ProfileActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_PICK);//
+        intent.setAction(Intent.ACTION_PICK);//ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(intent, "Select File"),2);
     }
 
@@ -409,6 +458,7 @@ public class ProfileActivity extends AppCompatActivity {
             CropImage.activity(selectedImageUri).start(this);
         }
 
+
         /*try {
             switch (requestCode) {
                 case 1: {
@@ -444,7 +494,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     //Handle for select from gallery
-    private void onSelectFromGalleryResult(Intent data) {
+    /*private void onSelectFromGalleryResult(Intent data) {
         Bitmap bitmap = null;
         ByteArrayOutputStream bytes = null;
         File fileName = null;
@@ -463,7 +513,7 @@ public class ProfileActivity extends AppCompatActivity {
         String encoded_string = Base64.encodeToString(array, 0);
         String image_name = fileName.getName();
         updateImage(encoded_string, image_name);
-    }
+    }*/
 
     //Handle for image capture from camera
     /*private void onCaptureImageResult(Intent data) {
@@ -546,7 +596,6 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
-                            loadProfile();
                             Toast.makeText(ProfileActivity.this, "Picture successfully changed!", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(ProfileActivity.this, "Picture failed to change.", Toast.LENGTH_LONG).show();
@@ -584,7 +633,6 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
-                            loadProfile();
                             Toast.makeText(ProfileActivity.this, "Picture successfully removed!", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(ProfileActivity.this, "There is no picture to remove.", Toast.LENGTH_LONG).show();
@@ -599,6 +647,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     //Load all data from user profile
     public void loadProfile() {
+        showProgress(true);
         Runnable run = new Runnable()
         {
             String strRespond, name, email, dob, weight, height, gender, passworddate, img64;
@@ -637,6 +686,7 @@ public class ProfileActivity extends AppCompatActivity {
                             txtGender.setText(gender);
                             txtPdate.setText(passworddate);
                             imgPhoto.setImageResource(R.drawable.person);
+                            showProgress(false);
                         } else if(strRespond.equals("True")){
                             txtEmail.setText(email);
                             txtName.setText(name);
@@ -648,8 +698,10 @@ public class ProfileActivity extends AppCompatActivity {
                             byte[] data = Base64.decode(img64, Base64.DEFAULT);
                             Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
                             imgPhoto.setImageBitmap(decodedByte);
+                            showProgress(false);
                         } else {
-                            Toast.makeText(ProfileActivity.this, "Something wrong.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProfileActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            showProgress(false);
                         }
                     }
                 });
@@ -763,7 +815,7 @@ public class ProfileActivity extends AppCompatActivity {
                         if(strRespond.equals("True")) {
                             updatePassword(newPass);
                         } else {
-                            Toast.makeText(ProfileActivity.this, "Wrong password entered.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProfileActivity.this, "You has entered wrong current password.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
