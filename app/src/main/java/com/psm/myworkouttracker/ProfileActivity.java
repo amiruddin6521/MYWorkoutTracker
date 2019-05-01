@@ -159,7 +159,6 @@ public class ProfileActivity extends AppCompatActivity {
                         boolean cancel = false;
                         View focusView = null;
                         String data = edtUpdate.getText().toString();
-                        String attr = "weight";
                         if (TextUtils.isEmpty(data)) {
                             edtUpdate.setError(getString(R.string.error_field_required));
                             focusView = edtUpdate;
@@ -169,7 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
                             focusView.requestFocus();
                         } else {
 
-                            updateData(id,attr,data);
+                            updateWeight(id,data);
                             dialog.cancel();
                         }
                     }
@@ -723,6 +722,44 @@ public class ProfileActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("selectFn", "fnUpdateProfile"));
                 params.add(new BasicNameValuePair("varId", idS));
                 params.add(new BasicNameValuePair("varAttr", attrS));
+                params.add(new BasicNameValuePair("varData", data));
+
+                try{
+                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                    strRespond = jsnObj.getString("respond");
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(strRespond.equals("True")) {
+                            loadProfile();
+                            Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    //Update weight data
+    public void updateWeight(final String idS, final String data) {
+        Runnable run = new Runnable()
+        {
+            String strRespond = "";
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnUpdateWeight"));
+                params.add(new BasicNameValuePair("varId", idS));
                 params.add(new BasicNameValuePair("varData", data));
 
                 try{

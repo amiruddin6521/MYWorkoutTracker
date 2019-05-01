@@ -155,6 +155,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_weighttrack) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new WeightTrackFragment()).commit();
+        } else if (id == R.id.nav_bodytrack) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    new BodyTrackFragment()).commit();
         } else if (id == R.id.nav_setting) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new SettingFragment()).commit();

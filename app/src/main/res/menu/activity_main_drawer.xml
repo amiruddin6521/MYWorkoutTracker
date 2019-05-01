@@ -17,9 +17,9 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Weight Track" />
         <item
-            android:id="@+id/nav_bmitrack"
+            android:id="@+id/nav_bodytrack"
             android:icon="@drawable/ic_menu_manage"
-            android:title="BMI Track" />
+            android:title="Body Track" />
     </group>
 
     <item android:title="Others">

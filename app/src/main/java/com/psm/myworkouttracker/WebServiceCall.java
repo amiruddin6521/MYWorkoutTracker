@@ -21,7 +21,7 @@ public class WebServiceCall {
 
     public WebServiceCall() {
         jsonObj = null;
-        strUrl = "http://192.168.1.21/MYWorkoutTracker/index.php";
+        strUrl = "http://192.168.1.35/MYWorkoutTracker/index.php";
     }
 
     public String fnGetURL()

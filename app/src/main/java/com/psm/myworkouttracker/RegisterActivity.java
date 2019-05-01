@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
     private int mYear, mMonth, mDay;
     private WebServiceCall wsc = new WebServiceCall();
     private JSONObject jsnObj = new JSONObject();
-    private String encoded_string, image_name, currentPhotoPath;
+    private String encoded_string, image_name, currentPhotoPath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -510,7 +510,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
                             RegisterActivity.this.finish();
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Something wrong!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(RegisterActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
