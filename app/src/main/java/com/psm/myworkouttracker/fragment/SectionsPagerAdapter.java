@@ -1,4 +1,4 @@
-package com.psm.myworkouttracker;
+package com.psm.myworkouttracker.fragment;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,7 +15,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                ExercisesTabFragment tab1 = new ExercisesTabFragment();
+                WorkoutTabFragment tab1 = new WorkoutTabFragment();
                 return tab1;
             case 1:
                 HistoryTabFragment tab2 = new HistoryTabFragment();
@@ -38,7 +38,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Exercises";
+                return "Workout";
             case 1:
                 return "History";
             case 2:

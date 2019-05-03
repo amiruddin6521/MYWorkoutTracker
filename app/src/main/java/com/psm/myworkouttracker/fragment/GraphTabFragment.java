@@ -1,4 +1,4 @@
-package com.psm.myworkouttracker;
+package com.psm.myworkouttracker.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,11 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class AboutFragment extends Fragment {
+import com.psm.myworkouttracker.R;
+
+public class GraphTabFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_about, container, false);
+        View v = inflater.inflate(R.layout.fragment_graphtab, container, false);
+
+        return v;
     }
 }

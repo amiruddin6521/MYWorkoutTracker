@@ -1,4 +1,4 @@
-package com.psm.myworkouttracker;
+package com.psm.myworkouttracker.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +19,16 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.psm.myworkouttracker.R;
+import com.psm.myworkouttracker.fragment.AboutFragment;
+import com.psm.myworkouttracker.fragment.BodyTrackFragment;
+import com.psm.myworkouttracker.fragment.ExercisesFragment;
+import com.psm.myworkouttracker.fragment.SettingFragment;
+import com.psm.myworkouttracker.fragment.WeightTrackFragment;
+import com.psm.myworkouttracker.fragment.WorkoutFragment;
+import com.psm.myworkouttracker.services.WebServiceCall;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -29,7 +39,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String id;
+    private String id = "1";
     private ImageView imageView1;
     private TextView txtName, txtEmail;
     private WebServiceCall wsc = new WebServiceCall();
@@ -41,8 +51,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // Get the id from login activity.
-        Intent intent = getIntent();
-        id = intent.getStringExtra("id");
+        /*Intent intent = getIntent();
+        id = intent.getStringExtra("id");*/
 
         loadProfile();
 

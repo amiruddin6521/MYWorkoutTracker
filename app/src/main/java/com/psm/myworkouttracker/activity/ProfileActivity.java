@@ -1,9 +1,8 @@
-package com.psm.myworkouttracker;
+package com.psm.myworkouttracker.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -32,6 +31,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.psm.myworkouttracker.R;
+import com.psm.myworkouttracker.services.WebServiceCall;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.http.NameValuePair;
@@ -40,8 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

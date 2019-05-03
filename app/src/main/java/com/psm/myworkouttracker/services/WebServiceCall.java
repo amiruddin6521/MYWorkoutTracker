@@ -1,4 +1,4 @@
-package com.psm.myworkouttracker;
+package com.psm.myworkouttracker.services;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,7 +21,7 @@ public class WebServiceCall {
 
     public WebServiceCall() {
         jsonObj = null;
-        strUrl = "http://192.168.1.35/MYWorkoutTracker/index.php";
+        strUrl = "http://192.168.1.35/MYWorkoutTracker/index.php"; //192.168.1.35, 192.168.1.23
     }
 
     public String fnGetURL()
