@@ -62,10 +62,10 @@ public class DbAdapter{
         return c;
     }
 
-    public Cursor getExercisesDataValue(String string){
+    public Cursor getExercisesFilter(String string){
         String[] cols = {DbHelper.ID_MACHINE,DbHelper.NAME_MACHINE};
         Open();
-        Cursor c = sqlDb.query(DbHelper.TABLE_MACHINE, cols, DbHelper.NAME_MACHINE + "=" + string,
+        Cursor c = sqlDb.query(DbHelper.TABLE_MACHINE, cols, DbHelper.NAME_MACHINE + " LIKE ?", new String[] {string+ "%" },
                 null, null, null, null);
         return c;
     }

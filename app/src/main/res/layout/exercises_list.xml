@@ -15,7 +15,8 @@
             android:layout_width="45dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
-            android:src="@drawable/person" />
+            android:src="@drawable/person"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/txtExercise"

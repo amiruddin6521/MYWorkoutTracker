@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:hint="Filter by exercise name"
-        android:imeOptions="actionNext"
         android:inputType="text|textCapWords|textAutoComplete|textNoSuggestions|textVisiblePassword" />
 
     <ListView
