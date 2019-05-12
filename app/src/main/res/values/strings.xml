@@ -23,4 +23,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="time"><u>00:10</u></string>
 </resources>

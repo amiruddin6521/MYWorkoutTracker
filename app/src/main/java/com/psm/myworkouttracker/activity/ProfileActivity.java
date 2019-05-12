@@ -32,7 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
-import com.psm.myworkouttracker.services.WebServiceCall;
+import com.psm.myworkouttracker.services.WebServiceCallObj;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.http.NameValuePair;
@@ -54,7 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageView imgPhoto;
     private TextView txtEmail, txtName, txtDob, txtWeight, txtHeight, txtGender, txtPdate;
     private ImageButton edtName, edtDob, edtWeight, edtHeight, edtGender, edtPassword;
-    private WebServiceCall wsc = new WebServiceCall();
+    private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
     private Dialog dialog;
     private EditText edtUpdate, edtCurrPass, edtNewPass;

@@ -14,12 +14,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class WebServiceCall {
+public class WebServiceCallObj {
 
     JSONObject jsonObj;
     String strUrl = "";
 
-    public WebServiceCall() {
+    public WebServiceCallObj() {
         jsonObj = null;
         strUrl = "http://192.168.1.35/MYWorkoutTracker/index.php"; //192.168.1.35, 192.168.1.23
     }

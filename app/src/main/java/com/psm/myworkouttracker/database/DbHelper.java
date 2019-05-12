@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME = "mwt.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     //Table Machine
     public static final String TABLE_MACHINE = "machine";
@@ -104,25 +104,9 @@ public class DbHelper extends SQLiteOpenHelper{
             /*db.execSQL(CREATE_REMINDER);
             db.execSQL(CREATE_CATEGORY);
             db.execSQL(CREATE_PASSWORD);*/
-            db.execSQL("INSERT INTO " + TABLE_MACHINE + " (" + NAME_MACHINE + ") VALUES" +
-                    "('Allowance')," +
-                    "('Auto')," +
-                    "('Bill Payments')," +
-                    "('Bonus')," +
-                    "('Book/Stationary')," +
-                    "('Clothing')," +
-                    "('Debt')," +
-                    "('Electronic')," +
-                    "('Entertaiment')," +
-                    "('Food')," +
-                    "('Gift')," +
-                    "('Groceries')," +
-                    "('Medical')," +
-                    "('Miscellaneous')," +
-                    "('Personal Care')," +
-                    "('Salary')," +
-                    "('Travel')," +
-                    "('Vehicle');");
+            db.execSQL("INSERT INTO " + TABLE_MACHINE + " (" + NAME_MACHINE + ", " + TYPE_MACHINE + ") VALUES" +
+                    "('Dumbbell', 'Body Building')," +
+                    "('Treadmill', 'Cardio');");
         }catch (SQLException e){
             //Message.message(context, "onCreate not called" + e);
         }

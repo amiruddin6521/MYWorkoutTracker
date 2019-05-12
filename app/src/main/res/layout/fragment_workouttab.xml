@@ -4,7 +4,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:padding="10dp"
     android:background="@drawable/ic_background">
 
     <ScrollView
@@ -15,8 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,20 +36,20 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_vertical|center"
-                            android:src="@drawable/ic_menu_camera"
+                            android:src="@drawable/person"
                             app:civ_border_color="#EEEEEE"
                             app:civ_border_width="0dp"
                             app:civ_shadow="false"
                             app:civ_shadow_color="#8BC34A"
-                            app:civ_shadow_radius="0"
-                            android:visibility="gone"/>
+                            app:civ_shadow_radius="0"/>
 
                     <AutoCompleteTextView
                         android:id="@+id/editMachine"
-                        android:layout_width="290dp"
+                        android:layout_width="270dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:hint="Filter by exercise name"
+                        android:textSize="14dp"
                         android:imeOptions="actionNext"
                         android:inputType="text|textCapWords|textAutoComplete|textNoSuggestions|textVisiblePassword"
                         android:singleLine="true" />
@@ -86,9 +85,11 @@
 
                     <EditText
                         android:id="@+id/dateUpd"
-                        android:layout_width="100dp"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:hint="2019-05-09"/>
+                        android:textSize="14dp"
+                        android:inputType="date"
+                        android:focusableInTouchMode="false"/>
 
                     <ListView
                         android:id="@+id/lisEx1"
@@ -105,9 +106,9 @@
                         android:id="@+id/excType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textStyle="bold"
                         android:layout_marginRight="10dp"
-                        android:textSize="18dp"
-                        android:text="Body Building"/>
+                        android:text="-"/>
 
 
                 </LinearLayout>
@@ -124,7 +125,7 @@
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="17dp"
+                        android:layout_marginLeft="22dp"
                         android:orientation="vertical"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
@@ -142,6 +143,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="1"
+                            android:inputType="number"
                             android:textAlignment="center" />
 
                         <LinearLayout
@@ -194,6 +196,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:textAlignment="center"
+                            android:inputType="number"
                             android:text="1"/>
 
                         <LinearLayout
@@ -251,6 +254,7 @@
                                 android:layout_width="45dp"
                                 android:layout_height="wrap_content"
                                 android:textAlignment="center"
+                                android:inputType="number"
                                 android:text="1"/>
 
                             <TextView
@@ -264,7 +268,7 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="6dp"
                             android:layout_gravity="center"
                             android:orientation="horizontal"
                             android:padding="2dp">
@@ -298,12 +302,12 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp"
                     android:padding="2dp"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="140dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="17dp"
+                        android:layout_marginLeft="23dp"
                         android:orientation="vertical"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
@@ -320,7 +324,8 @@
                             android:layout_width="95dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="0.1"
+                            android:text="1.0"
+                            android:inputType="numberDecimal"
                             android:textAlignment="center" />
 
                         <LinearLayout
@@ -365,15 +370,19 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:textStyle="bold|italic"
-                            android:text="Duration"/>
+                            android:text="Duration (HH:mm)"/>
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edtDurr"
                             android:layout_width="95dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
                             android:layout_gravity="center"
                             android:textAlignment="center"
-                            android:text="10:00"/>
+                            android:textStyle="bold"
+                            android:textSize="18dp"
+                            android:text="@string/time"/>
 
                         <LinearLayout
                             android:layout_width="wrap_content"

@@ -27,7 +27,7 @@ import com.psm.myworkouttracker.fragment.ExercisesFragment;
 import com.psm.myworkouttracker.fragment.SettingFragment;
 import com.psm.myworkouttracker.fragment.WeightTrackFragment;
 import com.psm.myworkouttracker.fragment.WorkoutFragment;
-import com.psm.myworkouttracker.services.WebServiceCall;
+import com.psm.myworkouttracker.services.WebServiceCallObj;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     private String id = "1";
     private ImageView imageView1;
     private TextView txtName, txtEmail;
-    private WebServiceCall wsc = new WebServiceCall();
+    private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
 
     @Override

@@ -1,76 +1,124 @@
 package com.psm.myworkouttracker.fragment;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FilterQueryProvider;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
-import com.psm.myworkouttracker.database.DbAdapter;
-import com.psm.myworkouttracker.database.DbHelper;
+import com.psm.myworkouttracker.adapter.ExercisesAdapter;
+import com.psm.myworkouttracker.services.WebServiceCallArr;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExercisesFragment extends Fragment {
 
     private EditText filterExercises;
-    private ListView exercises_list;
+    private ListView listExercises;
     private Button btnAddExercise;
-    private DbAdapter dbA;
-    private Cursor c;
-    private SimpleCursorAdapter sca;
+    private JSONObject jsnObj = new JSONObject();
+    private WebServiceCallArr wsc2 = new WebServiceCallArr();
+    private JSONArray jsnArr = new JSONArray();
+    private List<String> values = new ArrayList<>();
+    private View progExercises, fragExercises;
+    private ExercisesAdapter mExercisesAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_exercises, container, false);
 
-        dbA = new DbAdapter(getActivity());
-
         filterExercises = v.findViewById(R.id.filterExercises);
-        exercises_list = v.findViewById(R.id.exercises_list);
+        listExercises = v.findViewById(R.id.listExercises);
         btnAddExercise = v.findViewById(R.id.btnAddExercise);
+        progExercises = v.findViewById(R.id.progExercises);
+        fragExercises = v.findViewById(R.id.fragExercises);
 
-        String[] from = { DbHelper.NAME_MACHINE};
-        String[] from2 = { DbHelper.NAME_MACHINE};
-        int[] to = {R.id.txtExercise};
-        c = dbA.getExercisesData();
-        sca = new SimpleCursorAdapter(getContext(),
-                R.layout.exercises_list, c, from, to);
+        loadListData();
 
-        sca.setFilterQueryProvider(new FilterQueryProvider() {
-
+        btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
-            public Cursor runQuery(CharSequence constraint) {
-                String partialValue = constraint.toString();
-                return dbA.getExercisesFilter(partialValue);
+            public void onClick(View v) {
+
             }
         });
+        return v;
+    }
+
+    public void loadListData() {
+        Runnable run = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
+
+                jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                jsnObj = null;
+
+                try{
+                    if (jsnArr != null) {
+                        for (int i = 0; i < jsnArr.length(); i++) {
+                            jsnObj = jsnArr.getJSONObject(i);
+
+                            String data = jsnObj.getString("name");
+                            values.add(data);
+                        }
+                    }
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(values != null)
+                        {
+                            loadList();
+                        }
+                    }
+                });
+            }
+        };
+        Thread thr = new Thread(run);
+        thr.start();
+    }
+
+    public void loadList() {
+        progExercises.setVisibility(View.GONE);
+        fragExercises.setVisibility(View.VISIBLE);
+
+        mExercisesAdapter = new ExercisesAdapter(getContext(), values);
+        listExercises.setAdapter(mExercisesAdapter);
+        listExercises.setTextFilterEnabled(true);
 
         filterExercises.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                sca.getFilter().filter(s);
-                sca.notifyDataSetChanged();
+                mExercisesAdapter.getFilter().filter(s.toString());
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
@@ -78,41 +126,5 @@ public class ExercisesFragment extends Fragment {
 
             }
         });
-
-        exercises_list.setAdapter(sca);
-        exercises_list.setTextFilterEnabled(true);
-        exercises_list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
-                Bundle b = new Bundle();
-                c = (Cursor) arg0.getItemAtPosition(arg2);
-                int keyid = c.getInt(c
-                        .getColumnIndex(DbHelper.ID_MACHINE));
-                b.putInt("keyid", keyid);
-                //Toast.makeText(getContext(),Integer.toString(keyid),Toast.LENGTH_LONG).show();
-                /*Intent i = new Intent(ListCategoryActivity.this,
-                        EditCategoryActivity.class);
-                i.putExtras(b);
-                startActivity(i);*/
-            }
-        });
-
-        btnAddExercise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new AddEditExercisesFragment()).commit();*/
-
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                // Replace whatever is in the fragment_container view with this fragment,
-                // and add the transaction to the back stack so the user can navigate back
-                transaction.replace(R.id.fragment_container, new AddEditExercisesFragment());
-                transaction.addToBackStack(null);
-                // Commit the transaction
-                transaction.commit();
-            }
-        });
-        return v;
     }
 }

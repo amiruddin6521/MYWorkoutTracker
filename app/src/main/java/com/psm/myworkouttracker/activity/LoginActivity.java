@@ -15,7 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
-import com.psm.myworkouttracker.services.WebServiceCall;
+import com.psm.myworkouttracker.services.WebServiceCallObj;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;
     private View mProgressView;
     private View mLoginFormView;
-    private WebServiceCall wsc = new WebServiceCall();
+    private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
     private String email, password;
 
