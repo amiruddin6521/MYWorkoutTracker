@@ -105,9 +105,9 @@ public class ExercisesFragment extends Fragment {
         progExercises.setVisibility(View.GONE);
         fragExercises.setVisibility(View.VISIBLE);
 
-        mExercisesAdapter = new ExercisesAdapter(getContext(), values);
+        mExercisesAdapter = new ExercisesAdapter(getActivity(), values);
         listExercises.setAdapter(mExercisesAdapter);
-        listExercises.setTextFilterEnabled(true);
+        //listExercises.setTextFilterEnabled(true);
 
         filterExercises.addTextChangedListener(new TextWatcher() {
 

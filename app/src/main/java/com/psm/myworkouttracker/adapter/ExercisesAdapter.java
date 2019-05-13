@@ -33,6 +33,10 @@ public class ExercisesAdapter extends BaseAdapter implements Filterable {
         return filteredData.get(position);
     }
 
+    public String getItemName(int position) {
+        return filteredData.get(position);
+    }
+
     public long getItemId(int position) {
         return position;
     }
