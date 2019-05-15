@@ -10,11 +10,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
+import com.psm.myworkouttracker.activity.MainActivity;
 import com.psm.myworkouttracker.adapter.ExercisesAdapter;
 import com.psm.myworkouttracker.services.WebServiceCallArr;
 
@@ -38,6 +41,7 @@ public class ExercisesFragment extends Fragment {
     private List<String> values = new ArrayList<>();
     private View progExercises, fragExercises;
     private ExercisesAdapter mExercisesAdapter;
+    private String id;
 
     @Nullable
     @Override
@@ -49,6 +53,9 @@ public class ExercisesFragment extends Fragment {
         btnAddExercise = v.findViewById(R.id.btnAddExercise);
         progExercises = v.findViewById(R.id.progExercises);
         fragExercises = v.findViewById(R.id.fragExercises);
+
+        MainActivity activity = (MainActivity) getActivity();
+        id = activity.getMyData();
 
         loadListData();
 
@@ -69,6 +76,7 @@ public class ExercisesFragment extends Fragment {
             {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
+                params.add(new BasicNameValuePair("id", id));
 
                 jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                 jsnObj = null;
@@ -107,7 +115,13 @@ public class ExercisesFragment extends Fragment {
 
         mExercisesAdapter = new ExercisesAdapter(getActivity(), values);
         listExercises.setAdapter(mExercisesAdapter);
-        //listExercises.setTextFilterEnabled(true);
+        listExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String itemName = parent.getItemAtPosition(position).toString();
+                Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
+            }
+        });
 
         filterExercises.addTextChangedListener(new TextWatcher() {
 

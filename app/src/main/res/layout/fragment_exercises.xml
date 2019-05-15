@@ -21,7 +21,7 @@
         android:background="@drawable/cardborder"
         android:padding="10dp"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,7 +49,7 @@
 
         <ListView
             android:id="@+id/listExercises"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" >
         </ListView>

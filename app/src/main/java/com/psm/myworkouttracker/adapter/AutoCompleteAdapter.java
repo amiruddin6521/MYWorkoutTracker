@@ -19,16 +19,12 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
     private ArrayList<String> fullList;
     private ArrayList<String> mOriginalValues;
     private ArrayFilter mFilter;
-    private int itemLayout;
-    private int itemViewLayout;
 
     public AutoCompleteAdapter(Context context, int resource, int textViewResourceId, List<String> objects) {
 
         super(context, resource, textViewResourceId, objects);
         fullList = (ArrayList<String>) objects;
         mOriginalValues = new ArrayList<String>(fullList);
-        itemLayout = resource;
-        itemViewLayout = textViewResourceId;
     }
 
     @Override
@@ -45,10 +41,10 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(parent.getContext())
-                    .inflate(itemLayout, parent, false);
+                    .inflate(R.layout.exercises_list, parent, false);
         }
 
-        TextView strName = (TextView) convertView.findViewById(itemViewLayout);
+        TextView strName = (TextView) convertView.findViewById(R.id.txtExercise);
         strName.setText(getItem(position));
         return convertView;
     }
@@ -107,7 +103,6 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-
             if(results.values!=null){
                 fullList = (ArrayList<String>) results.values;
             } else {
