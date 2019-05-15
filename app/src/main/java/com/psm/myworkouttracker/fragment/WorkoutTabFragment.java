@@ -66,6 +66,7 @@ public class WorkoutTabFragment extends Fragment {
     private WorkoutTabAdapterB bAdapter;
     private WorkoutTabAdapterC cAdapter;
     private String uId, mId;
+    private View progWorkout, fragWorkout;
 
     @Nullable
     @Override
@@ -94,6 +95,8 @@ public class WorkoutTabFragment extends Fragment {
         dateUpd = v.findViewById(R.id.dateUpd);
         btnListMachine = v.findViewById(R.id.btnListMachine);
         edtMachine = v.findViewById(R.id.edtMachine);
+        progWorkout = v.findViewById(R.id.progWorkout);
+        fragWorkout = v.findViewById(R.id.fragWorkout);
 
         edtMachine.setOnFocusChangeListener(touchRazEdit);
         dateUpd.setOnFocusChangeListener(touchRazEdit);
@@ -372,6 +375,7 @@ public class WorkoutTabFragment extends Fragment {
             public void onClick(DialogInterface dialog, int position) {
                 String itemName = mExercisesAdapter.getItemName(position);
                 loadMachine(itemName);
+                progWorkout.setVisibility(View.VISIBLE);
             }
         });
         myBuilder.setNegativeButton("Cancel", null);
@@ -615,6 +619,8 @@ public class WorkoutTabFragment extends Fragment {
         if(type.equals("Cardio")) {
             bodybuilding.setVisibility(View.GONE);
             cardio.setVisibility(View.VISIBLE);
+            progWorkout.setVisibility(View.GONE);
+            fragWorkout.setVisibility(View.VISIBLE);
             edtMachine.setText(name);
             txtType.setText(type);
             edtSets.setText("1");
@@ -626,6 +632,8 @@ public class WorkoutTabFragment extends Fragment {
         } else {
             cardio.setVisibility(View.GONE);
             bodybuilding.setVisibility(View.VISIBLE);
+            progWorkout.setVisibility(View.GONE);
+            fragWorkout.setVisibility(View.VISIBLE);
             edtMachine.setText(name);
             txtType.setText(type);
             edtDist.setText("5.0");
@@ -639,6 +647,7 @@ public class WorkoutTabFragment extends Fragment {
     public void clearUIData() {
         cardio.setVisibility(View.GONE);
         bodybuilding.setVisibility(View.VISIBLE);
+        fragWorkout.setVisibility(View.GONE);
         edtMachine.setText("");
         edtSets.setText("1");
         edtReps.setText("1");
@@ -690,8 +699,11 @@ public class WorkoutTabFragment extends Fragment {
                     public void run() {
                         if(strRespond.equals("True")) {
                             String name = edtMachine.getText().toString();
-                            Toast.makeText(getActivity(),name,Toast.LENGTH_LONG).show();
                             loadWorkoutDataB(name);
+                            long date = System.currentTimeMillis();
+                            SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
+                            String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
+                            Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                         }
@@ -738,8 +750,11 @@ public class WorkoutTabFragment extends Fragment {
                     public void run() {
                         if(strRespond.equals("True")) {
                             String name = edtMachine.getText().toString();
-                            Toast.makeText(getActivity(),name,Toast.LENGTH_LONG).show();
                             loadWorkoutDataC(name);
+                            long date = System.currentTimeMillis();
+                            SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
+                            String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
+                            Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                         }
@@ -754,5 +769,11 @@ public class WorkoutTabFragment extends Fragment {
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        clearUIData();
     }
 }

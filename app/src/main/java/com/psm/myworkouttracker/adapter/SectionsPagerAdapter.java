@@ -1,14 +1,27 @@
-package com.psm.myworkouttracker.fragment;
+package com.psm.myworkouttracker.adapter;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
+
+import com.psm.myworkouttracker.fragment.GraphTabFragment;
+import com.psm.myworkouttracker.fragment.HistoryTabFragment;
+import com.psm.myworkouttracker.fragment.WorkoutTabFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+    private Map<Integer, String> mFragmentTags;
+    private FragmentManager mFragmentManager;
+
     public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
+        mFragmentManager = fm;
+        mFragmentTags = new HashMap<Integer, String>();
     }
 
     @Override
@@ -45,5 +58,23 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 return "Graph";
         }
         return null;
+    }
+
+    public Object instantiateItem(ViewGroup container, int position) {
+        Object obj = super.instantiateItem(container,position);
+        if(obj instanceof Fragment) {
+            Fragment f = (Fragment) obj;
+            String tag = f.getTag();
+            mFragmentTags.put(position, tag);
+        }
+        return obj;
+    }
+
+    public Fragment getFragment(int position) {
+        String tag = mFragmentTags.get(position);
+        if(tag == null) {
+            return null;
+        }
+        return mFragmentManager.findFragmentByTag(tag);
     }
 }

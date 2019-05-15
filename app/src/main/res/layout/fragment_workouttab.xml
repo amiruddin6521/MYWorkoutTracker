@@ -40,20 +40,15 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/edtMachine"
-                    android:layout_width="270dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:hint="Filter by exercise name"
                     android:textSize="14dp"
                     android:imeOptions="actionNext"
                     android:inputType="text|textCapWords|textAutoComplete"
                     android:singleLine="true" />
-
-                <ListView
-                    android:id="@+id/lisEx"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
 
                 <ImageButton
                     android:id="@+id/btnListMachine"
@@ -117,10 +112,10 @@
                     android:visibility="visible">
 
                     <LinearLayout
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="22dp"
                         android:orientation="vertical"
+                        android:layout_weight="1"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
 
@@ -169,9 +164,10 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_weight="1"
                         android:layout_marginLeft="40dp"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
@@ -221,9 +217,10 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="80dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_weight="1"
                         android:layout_marginLeft="40dp"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
@@ -298,9 +295,9 @@
                     android:visibility="gone">
 
                     <LinearLayout
-                        android:layout_width="140dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="23dp"
+                        android:layout_weight="1"
                         android:orientation="vertical"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
@@ -351,9 +348,10 @@
 
 
                     <LinearLayout
-                        android:layout_width="140dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_weight="1"
                         android:layout_marginLeft="40dp"
                         android:background="@drawable/cardborder"
                         android:padding="2dp">
@@ -412,12 +410,23 @@
 
             </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/progWorkout"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:visibility="gone" />
+
         <LinearLayout
+            android:id="@+id/fragWorkout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:background="@drawable/cardborder">
+            android:background="@drawable/cardborder"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"

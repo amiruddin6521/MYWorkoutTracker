@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.psm.myworkouttracker.R;
+import com.psm.myworkouttracker.adapter.SectionsPagerAdapter;
 
 public class WorkoutFragment extends Fragment {
 
@@ -28,8 +29,32 @@ public class WorkoutFragment extends Fragment {
         mViewPager = v.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = v.findViewById(R.id.tabs);
+        final TabLayout tabLayout = v.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                Fragment fragment = ((SectionsPagerAdapter)mViewPager.getAdapter()).getFragment(i);
+                if(i == 0 && fragment != null) {
+                    fragment.onResume();
+                } else if(i == 1 && fragment != null) {
+                    fragment.onResume();
+                } else {
+                    fragment.onResume();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
 
         return v;
     }
