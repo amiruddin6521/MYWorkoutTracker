@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.view.View;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity
     private TextView txtName, txtEmail;
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
+    private Fragment frag = null;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity
 
         loadProfile();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         /*FloatingActionButton fab = findViewById(R.id.fab);
@@ -74,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View header= navigationView.getHeaderView(0);
@@ -94,8 +99,14 @@ public class MainActivity extends AppCompatActivity
         });
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new WorkoutFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_workout);
+            frag = new WorkoutFragment();
+            if(frag != null) {
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.fragment_container, frag)
+                        .commit();
+                navigationView.setCheckedItem(R.id.nav_workout);
+            }
         }
     }
 
@@ -109,27 +120,37 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
-            alertDialog.setTitle("Exit Application");
-            alertDialog.setMessage("Are you sure you want to logout?");
-            alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    MainActivity.this.finish();
-                }
-            });
+            int count = getSupportFragmentManager().getBackStackEntryCount();
 
-            alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            alertDialog.show();
+            if (count == 0) {
+                exitDialog();
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
         }
+    }
+
+    public void exitDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+        alertDialog.setTitle("Exit Application");
+        alertDialog.setMessage("Are you sure you want to logout?");
+        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }
+        });
+
+        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialog.show();
     }
 
     @Override
@@ -160,24 +181,27 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         if (id == R.id.nav_workout) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new WorkoutFragment()).commit();
+            frag = new WorkoutFragment();
         } else if (id == R.id.nav_exercises) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new ExercisesFragment()).commit();
+            frag = new ExercisesFragment();
         } else if (id == R.id.nav_weighttrack) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new WeightTrackFragment()).commit();
+            frag = new WeightTrackFragment();
         } else if (id == R.id.nav_bodytrack) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new BodyTrackFragment()).commit();
+            frag = new BodyTrackFragment();
         } else if (id == R.id.nav_setting) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new SettingFragment()).commit();
+            frag = new SettingFragment();
         } else if (id == R.id.nav_about) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new AboutFragment()).commit();
+            frag = new AboutFragment();
+        }
+
+        if(frag != null) {
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction()
+                    .replace(R.id.fragment_container, frag)
+                    .commit();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

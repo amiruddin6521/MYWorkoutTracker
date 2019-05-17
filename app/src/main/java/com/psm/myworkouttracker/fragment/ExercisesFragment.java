@@ -1,15 +1,18 @@
 package com.psm.myworkouttracker.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +41,7 @@ public class ExercisesFragment extends Fragment {
     private JSONObject jsnObj = new JSONObject();
     private WebServiceCallArr wsc2 = new WebServiceCallArr();
     private JSONArray jsnArr = new JSONArray();
-    private List<String> values = new ArrayList<>();
+    private List<String> values;
     private View progExercises, fragExercises;
     private ExercisesAdapter mExercisesAdapter;
     private String id;
@@ -80,6 +83,7 @@ public class ExercisesFragment extends Fragment {
 
                 jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                 jsnObj = null;
+                values = new ArrayList<>();
 
                 try{
                     if (jsnArr != null) {
@@ -118,8 +122,18 @@ public class ExercisesFragment extends Fragment {
         listExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
+                String exerciseName = parent.getItemAtPosition(position).toString();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("exercise", exerciseName);
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                AddEditExercisesFragment fragment = new AddEditExercisesFragment();
+                fragment.setArguments(bundle);
+                fragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container,fragment)
+                        .commit();
             }
         });
 
@@ -140,5 +154,16 @@ public class ExercisesFragment extends Fragment {
 
             }
         });
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideKeyboard(filterExercises);
     }
 }

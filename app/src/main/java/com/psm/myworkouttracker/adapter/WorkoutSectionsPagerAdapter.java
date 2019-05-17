@@ -13,12 +13,12 @@ import com.psm.myworkouttracker.fragment.WorkoutTabFragment;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class WorkoutSectionsPagerAdapter extends FragmentPagerAdapter {
 
     private Map<Integer, String> mFragmentTags;
     private FragmentManager mFragmentManager;
 
-    public SectionsPagerAdapter(FragmentManager fm) {
+    public WorkoutSectionsPagerAdapter(FragmentManager fm) {
         super(fm);
         mFragmentManager = fm;
         mFragmentTags = new HashMap<Integer, String>();

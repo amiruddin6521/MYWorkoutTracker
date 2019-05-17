@@ -32,12 +32,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Exercise:"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:text="Date:"/>
 
                 </LinearLayout>
@@ -48,15 +42,7 @@
                     android:orientation="vertical">
 
                     <android.support.v7.widget.AppCompatSpinner
-                        android:id="@+id/spnExercise"
-                        android:layout_width="match_parent"
-                        android:layout_height="22dp"
-                        android:layout_marginBottom="5dp">
-
-                    </android.support.v7.widget.AppCompatSpinner>
-
-                    <android.support.v7.widget.AppCompatSpinner
-                        android:id="@+id/spnDate"
+                        android:id="@+id/spnDate2"
                         android:layout_width="match_parent"
                         android:layout_height="22dp">
 
@@ -69,7 +55,7 @@
         </LinearLayout>
 
         <ProgressBar
-            android:id="@+id/progHistory"
+            android:id="@+id/progHistory2"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -77,8 +63,18 @@
             android:layout_margin="10dp"
             android:visibility="visible" />
 
+        <TextView
+            android:id="@+id/txtNoHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No history yet"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:visibility="gone"/>
+
         <LinearLayout
-            android:id="@+id/fragHistory"
+            android:id="@+id/fragHistory2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/cardborder"
@@ -86,7 +82,7 @@
             android:visibility="gone">
 
             <ListView
-                android:id="@+id/listHistory"
+                android:id="@+id/listHistory2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" >

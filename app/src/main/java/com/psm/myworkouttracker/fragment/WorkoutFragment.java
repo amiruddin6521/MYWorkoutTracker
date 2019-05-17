@@ -11,11 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.psm.myworkouttracker.R;
-import com.psm.myworkouttracker.adapter.SectionsPagerAdapter;
+import com.psm.myworkouttracker.adapter.WorkoutSectionsPagerAdapter;
 
 public class WorkoutFragment extends Fragment {
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private WorkoutSectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
     @Nullable
@@ -24,7 +24,7 @@ public class WorkoutFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_workout, container, false);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
+        mSectionsPagerAdapter = new WorkoutSectionsPagerAdapter(getChildFragmentManager());
 
         mViewPager = v.findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -40,7 +40,7 @@ public class WorkoutFragment extends Fragment {
 
             @Override
             public void onPageSelected(int i) {
-                Fragment fragment = ((SectionsPagerAdapter)mViewPager.getAdapter()).getFragment(i);
+                Fragment fragment = ((WorkoutSectionsPagerAdapter)mViewPager.getAdapter()).getFragment(i);
                 if(i == 0 && fragment != null) {
                     fragment.onResume();
                 } else if(i == 1 && fragment != null) {

@@ -29,10 +29,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryTabFragment extends Fragment {
+public class ExercisesHistoryTabFragment extends Fragment {
 
-    private String uId, mId, tId;
-    private Spinner spnExercise, spnDate;
+    private String uId, mId, tId, exerciseName;
+    private Spinner spnDate;
     private ListView listHistory;
     private List<String> bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr, exValues, dtValues;
     private WorkoutTabAdapterB bAdapter;
@@ -41,38 +41,27 @@ public class HistoryTabFragment extends Fragment {
     private JSONArray jsnArr = new JSONArray();
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private WebServiceCallArr wsc2 = new WebServiceCallArr();
-    private View progHistory, fragHistory;
+    private View progHistory, fragHistory, txtNoHistory;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_historytab, container, false);
+        View v = inflater.inflate(R.layout.fragment_exercises_historytab, container, false);
 
         MainActivity activity = (MainActivity) getActivity();
         uId = activity.getMyData();
 
-        spnExercise = v.findViewById(R.id.spnExercise);
-        spnDate = v.findViewById(R.id.spnDate);
-        listHistory = v.findViewById(R.id.listHistory);
-        progHistory = v.findViewById(R.id.progHistory);
-        fragHistory = v.findViewById(R.id.fragHistory);
+        Bundle bundle = getArguments();
+        exerciseName = bundle.getString("exercise");
 
-        loadExerciseData();
+        spnDate = v.findViewById(R.id.spnDate2);
+        listHistory = v.findViewById(R.id.listHistory2);
+        progHistory = v.findViewById(R.id.progHistory2);
+        fragHistory = v.findViewById(R.id.fragHistory2);
+        txtNoHistory = v.findViewById(R.id.txtNoHistory);
 
-        spnExercise.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                progHistory.setVisibility(View.VISIBLE);
-                fragHistory.setVisibility(View.GONE);
-                String selected = parent.getItemAtPosition(position).toString();
-                loadMachine(selected);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        loadMachine(exerciseName);
+        //Toast.makeText(getActivity(), "Test: " + exerciseName, Toast.LENGTH_LONG).show();
 
         spnDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -80,11 +69,10 @@ public class HistoryTabFragment extends Fragment {
                 progHistory.setVisibility(View.VISIBLE);
                 fragHistory.setVisibility(View.GONE);
                 String selected = parent.getItemAtPosition(position).toString();
-                String exercise = spnExercise.getSelectedItem().toString();
                 if(tId.equals("Cardio")){
-                    loadWorkoutDataC(exercise, selected);
+                    loadWorkoutDataC(exerciseName, selected);
                 } else {
-                    loadWorkoutDataB(exercise, selected);
+                    loadWorkoutDataB(exerciseName, selected);
                 }
             }
 
@@ -95,56 +83,6 @@ public class HistoryTabFragment extends Fragment {
         });
 
         return v;
-    }
-
-    public void loadExerciseData() {
-        Runnable run = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
-                params.add(new BasicNameValuePair("id", uId));
-
-                jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                jsnObj = null;
-                exValues = new ArrayList<>();
-
-                try{
-                    if (jsnArr != null) {
-                        for (int i = 0; i < jsnArr.length(); i++) {
-                            jsnObj = jsnArr.getJSONObject(i);
-
-                            String data = jsnObj.getString("name");
-                            exValues.add(data);
-                        }
-                    }
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(exValues != null)
-                        {
-                            loadExerciseSpn();
-                        }
-                    }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
-    }
-
-    public void loadExerciseSpn() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, exValues);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnExercise.setAdapter(adapter);
-        String exercise = spnExercise.getSelectedItem().toString();
-        loadMachine(exercise);
     }
 
     public void loadMachine(final String name) {
@@ -272,14 +210,19 @@ public class HistoryTabFragment extends Fragment {
     }
 
     public void loadDateSpn() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, dtValues);
-        spnDate.setAdapter(adapter);
-        String exercise = spnExercise.getSelectedItem().toString();
-        String date = spnDate.getSelectedItem().toString();
-        if(tId.equals("Cardio")){
-            loadWorkoutDataC(exercise, date);
+
+        if(!dtValues.isEmpty()) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, dtValues);
+            spnDate.setAdapter(adapter);
+            String date = spnDate.getSelectedItem().toString();
+            if(tId.equals("Cardio")){
+                loadWorkoutDataC(exerciseName, date);
+            } else {
+                loadWorkoutDataB(exerciseName, date);
+            }
         } else {
-            loadWorkoutDataB(exercise, date);
+            progHistory.setVisibility(View.GONE);
+            txtNoHistory.setVisibility(View.VISIBLE);
         }
     }
 
@@ -430,11 +373,5 @@ public class HistoryTabFragment extends Fragment {
         });
         progHistory.setVisibility(View.GONE);
         fragHistory.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadExerciseData();
     }
 }

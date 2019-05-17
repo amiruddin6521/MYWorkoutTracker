@@ -375,7 +375,6 @@ public class WorkoutTabFragment extends Fragment {
             public void onClick(DialogInterface dialog, int position) {
                 String itemName = mExercisesAdapter.getItemName(position);
                 loadMachine(itemName);
-                progWorkout.setVisibility(View.VISIBLE);
             }
         });
         myBuilder.setNegativeButton("Cancel", null);
@@ -578,6 +577,7 @@ public class WorkoutTabFragment extends Fragment {
     }
 
     public void loadMachine(final String name) {
+        progWorkout.setVisibility(View.VISIBLE);
         Runnable run = new Runnable()
         {
             String strRespond, type;
@@ -774,6 +774,15 @@ public class WorkoutTabFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        clearUIData();
+        String item = edtMachine.getText().toString();
+        if(!item.equals("")){
+            loadMachine(item);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideKeyboard(edtMachine);
     }
 }
