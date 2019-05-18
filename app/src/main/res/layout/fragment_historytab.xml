@@ -77,6 +77,16 @@
             android:layout_margin="10dp"
             android:visibility="visible" />
 
+        <TextView
+            android:id="@+id/txtNoHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No history yet"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:visibility="gone"/>
+
         <LinearLayout
             android:id="@+id/fragHistory"
             android:layout_width="match_parent"

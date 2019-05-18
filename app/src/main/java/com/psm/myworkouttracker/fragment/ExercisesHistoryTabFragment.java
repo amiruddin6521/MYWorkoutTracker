@@ -1,5 +1,7 @@
 package com.psm.myworkouttracker.fragment;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +30,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class ExercisesHistoryTabFragment extends Fragment {
 
@@ -61,7 +65,6 @@ public class ExercisesHistoryTabFragment extends Fragment {
         txtNoHistory = v.findViewById(R.id.txtNoHistory);
 
         loadMachine(exerciseName);
-        //Toast.makeText(getActivity(), "Test: " + exerciseName, Toast.LENGTH_LONG).show();
 
         spnDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -84,128 +87,166 @@ public class ExercisesHistoryTabFragment extends Fragment {
 
         return v;
     }
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
+    }
+
 
     public void loadMachine(final String name) {
-        Runnable run = new Runnable()
-        {
-            String strRespond;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnGetMachine"));
-                params.add(new BasicNameValuePair("id", uId));
-                params.add(new BasicNameValuePair("name", name));
+                String strRespond;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnGetMachine"));
+                    params.add(new BasicNameValuePair("id", uId));
+                    params.add(new BasicNameValuePair("name", name));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    tId = jsnObj.getString("type");
-                    mId = jsnObj.getString("id");
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        tId = jsnObj.getString("type");
+                        mId = jsnObj.getString("id");
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            loadDateData();
-                        } else {
-                            Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                loadDateData();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     public void loadDateData() {
-        if(tId.equals("Cardio")){
-            Runnable run = new Runnable()
-            {
-                @Override
-                public void run()
+        if(haveNetwork()) {
+            if(tId.equals("Cardio")){
+                Runnable run = new Runnable()
                 {
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("selectFn", "fnMWorkoutDateC"));
-                    params.add(new BasicNameValuePair("mId", mId));
-                    params.add(new BasicNameValuePair("uId", uId));
+                    @Override
+                    public void run()
+                    {
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("selectFn", "fnMWorkoutDateC"));
+                        params.add(new BasicNameValuePair("mId", mId));
+                        params.add(new BasicNameValuePair("uId", uId));
 
-                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                    jsnObj = null;
-                    dtValues = new ArrayList<>();
+                        jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                        jsnObj = null;
+                        dtValues = new ArrayList<>();
 
-                    try{
-                        if (jsnArr != null) {
-                            for (int i = 0; i < jsnArr.length(); i++) {
-                                jsnObj = jsnArr.getJSONObject(i);
+                        try{
+                            if (jsnArr != null) {
+                                for (int i = 0; i < jsnArr.length(); i++) {
+                                    jsnObj = jsnArr.getJSONObject(i);
 
-                                String data = jsnObj.getString("cDate");
-                                dtValues.add(data);
+                                    String data = jsnObj.getString("cDate");
+                                    dtValues.add(data);
+                                }
                             }
+                        } catch (JSONException e){
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e){
-                        e.printStackTrace();
+
+                        if(getActivity() == null)
+                            return;
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(dtValues != null)
+                                {
+                                    loadDateSpn();
+                                }
+                            }
+                        });
                     }
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(dtValues != null)
-                            {
-                                loadDateSpn();
-                            }
-                        }
-                    });
-                }
-            };
-            Thread thr = new Thread(run);
-            thr.start();
-        } else {
-            Runnable run = new Runnable()
-            {
-                @Override
-                public void run()
+                };
+                Thread thr = new Thread(run);
+                thr.start();
+            } else {
+                Runnable run = new Runnable()
                 {
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("selectFn", "fnMWorkoutDateB"));
-                    params.add(new BasicNameValuePair("mId", mId));
-                    params.add(new BasicNameValuePair("uId", uId));
+                    @Override
+                    public void run()
+                    {
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("selectFn", "fnMWorkoutDateB"));
+                        params.add(new BasicNameValuePair("mId", mId));
+                        params.add(new BasicNameValuePair("uId", uId));
 
-                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                    jsnObj = null;
-                    dtValues = new ArrayList<>();
+                        jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                        jsnObj = null;
+                        dtValues = new ArrayList<>();
 
-                    try{
-                        if (jsnArr != null) {
-                            for (int i = 0; i < jsnArr.length(); i++) {
-                                jsnObj = jsnArr.getJSONObject(i);
+                        try{
+                            if (jsnArr != null) {
+                                for (int i = 0; i < jsnArr.length(); i++) {
+                                    jsnObj = jsnArr.getJSONObject(i);
 
-                                String data = jsnObj.getString("bDate");
-                                dtValues.add(data);
+                                    String data = jsnObj.getString("bDate");
+                                    dtValues.add(data);
+                                }
                             }
+                        } catch (JSONException e){
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e){
-                        e.printStackTrace();
+
+                        if(getActivity() == null)
+                            return;
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(dtValues != null)
+                                {
+                                    loadDateSpn();
+                                }
+                            }
+                        });
                     }
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(dtValues != null)
-                            {
-                                loadDateSpn();
-                            }
-                        }
-                    });
-                }
-            };
-            Thread thr = new Thread(run);
-            thr.start();
+                };
+                Thread thr = new Thread(run);
+                thr.start();
+            }
+        } else if(!haveNetwork()) {
+            loadMachine(exerciseName);
         }
     }
 
@@ -227,65 +268,72 @@ public class ExercisesHistoryTabFragment extends Fragment {
     }
 
     public void loadWorkoutDataB(final String machine, final String date) {
-        Runnable run = new Runnable()
-        {
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateB"));
-                params.add(new BasicNameValuePair("mId", mId));
-                params.add(new BasicNameValuePair("uId", uId));
-                params.add(new BasicNameValuePair("date", date));
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateB"));
+                    params.add(new BasicNameValuePair("mId", mId));
+                    params.add(new BasicNameValuePair("uId", uId));
+                    params.add(new BasicNameValuePair("date", date));
 
-                jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                jsnObj = null;
-                bMachine = new ArrayList<>();
-                bDate = new ArrayList<>();
-                bTime = new ArrayList<>();
-                sets = new ArrayList<>();
-                reps = new ArrayList<>();
-                weight = new ArrayList<>();
+                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                    jsnObj = null;
+                    bMachine = new ArrayList<>();
+                    bDate = new ArrayList<>();
+                    bTime = new ArrayList<>();
+                    sets = new ArrayList<>();
+                    reps = new ArrayList<>();
+                    weight = new ArrayList<>();
 
-                try{
-                    if (jsnArr != null) {
-                        for (int i = 0; i < jsnArr.length(); i++) {
-                            jsnObj = jsnArr.getJSONObject(i);
-                            String data1 = jsnObj.getString("bDate");
-                            String data2 = jsnObj.getString("bTime");
-                            String data3 = jsnObj.getString("sets");
-                            String data4 = jsnObj.getString("reps");
-                            String data5 = jsnObj.getString("weight");
+                    try{
+                        if (jsnArr != null) {
+                            for (int i = 0; i < jsnArr.length(); i++) {
+                                jsnObj = jsnArr.getJSONObject(i);
+                                String data1 = jsnObj.getString("bDate");
+                                String data2 = jsnObj.getString("bTime");
+                                String data3 = jsnObj.getString("sets");
+                                String data4 = jsnObj.getString("reps");
+                                String data5 = jsnObj.getString("weight");
 
 
-                            bMachine.add(machine);
-                            bDate.add(data1);
-                            bTime.add(data2);
-                            sets.add(data3);
-                            reps.add(data4);
-                            weight.add(data5);
+                                bMachine.add(machine);
+                                bDate.add(data1);
+                                bTime.add(data2);
+                                sets.add(data3);
+                                reps.add(data4);
+                                weight.add(data5);
+                            }
                         }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                } catch (JSONException e){
-                    e.printStackTrace();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(bDate != null)
+                            {
+                                loadDataB();
+                            } else {
+                                Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    });
                 }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(bDate != null)
-                        {
-                            loadDataB();
-                        } else {
-                            Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            loadMachine(exerciseName);
+        }
     }
 
     public void loadDataB() {
@@ -303,62 +351,69 @@ public class ExercisesHistoryTabFragment extends Fragment {
     }
 
     public void loadWorkoutDataC(final String machine, final String date) {
-        Runnable run = new Runnable()
-        {
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateC"));
-                params.add(new BasicNameValuePair("mId", mId));
-                params.add(new BasicNameValuePair("uId", uId));
-                params.add(new BasicNameValuePair("date", date));
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateC"));
+                    params.add(new BasicNameValuePair("mId", mId));
+                    params.add(new BasicNameValuePair("uId", uId));
+                    params.add(new BasicNameValuePair("date", date));
 
-                jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                jsnObj = null;
-                cMachine = new ArrayList<>();
-                cDate = new ArrayList<>();
-                cTime = new ArrayList<>();
-                dist = new ArrayList<>();
-                durr = new ArrayList<>();
+                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                    jsnObj = null;
+                    cMachine = new ArrayList<>();
+                    cDate = new ArrayList<>();
+                    cTime = new ArrayList<>();
+                    dist = new ArrayList<>();
+                    durr = new ArrayList<>();
 
-                try{
-                    if (jsnArr != null) {
-                        for (int i = 0; i < jsnArr.length(); i++) {
-                            jsnObj = jsnArr.getJSONObject(i);
-                            String data1 = jsnObj.getString("cDate");
-                            String data2 = jsnObj.getString("cTime");
-                            String data3 = jsnObj.getString("distance");
-                            String data4 = jsnObj.getString("duration");
+                    try{
+                        if (jsnArr != null) {
+                            for (int i = 0; i < jsnArr.length(); i++) {
+                                jsnObj = jsnArr.getJSONObject(i);
+                                String data1 = jsnObj.getString("cDate");
+                                String data2 = jsnObj.getString("cTime");
+                                String data3 = jsnObj.getString("distance");
+                                String data4 = jsnObj.getString("duration");
 
 
-                            cMachine.add(machine);
-                            cDate.add(data1);
-                            cTime.add(data2);
-                            dist.add(data3);
-                            durr.add(data4);
+                                cMachine.add(machine);
+                                cDate.add(data1);
+                                cTime.add(data2);
+                                dist.add(data3);
+                                durr.add(data4);
+                            }
                         }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                } catch (JSONException e){
-                    e.printStackTrace();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(cDate != null)
+                            {
+                                loadDataC();
+                            } else {
+                                Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    });
                 }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(cDate != null)
-                        {
-                            loadDataC();
-                        } else {
-                            Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            loadMachine(exerciseName);
+        }
     }
 
     public void loadDataC() {

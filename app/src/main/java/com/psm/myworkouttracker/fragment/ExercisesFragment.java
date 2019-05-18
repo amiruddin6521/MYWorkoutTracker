@@ -1,12 +1,13 @@
 package com.psm.myworkouttracker.fragment;
 
 import android.app.Activity;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class ExercisesFragment extends Fragment {
 
@@ -65,52 +68,85 @@ public class ExercisesFragment extends Fragment {
         btnAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                AddExercisesFragment frag = new AddExercisesFragment();
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                manager.beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container, frag)
+                        .commit();
             }
         });
         return v;
     }
 
-    public void loadListData() {
-        Runnable run = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
-                params.add(new BasicNameValuePair("id", id));
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
 
-                jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                jsnObj = null;
-                values = new ArrayList<>();
-
-                try{
-                    if (jsnArr != null) {
-                        for (int i = 0; i < jsnArr.length(); i++) {
-                            jsnObj = jsnArr.getJSONObject(i);
-
-                            String data = jsnObj.getString("name");
-                            values.add(data);
-                        }
-                    }
-                } catch (JSONException e){
-                    e.printStackTrace();
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
                 }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(values != null)
-                        {
-                            loadList();
-                        }
-                    }
-                });
             }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
+    }
+
+    public void loadListData() {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
+                    params.add(new BasicNameValuePair("id", id));
+
+                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                    jsnObj = null;
+                    values = new ArrayList<>();
+
+                    try{
+                        if (jsnArr != null) {
+                            for (int i = 0; i < jsnArr.length(); i++) {
+                                jsnObj = jsnArr.getJSONObject(i);
+
+                                String data = jsnObj.getString("name");
+                                values.add(data);
+                            }
+                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(values != null)
+                            {
+                                loadList();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+           Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     public void loadList() {
@@ -128,7 +164,7 @@ public class ExercisesFragment extends Fragment {
                 bundle.putString("exercise", exerciseName);
 
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                AddEditExercisesFragment fragment = new AddEditExercisesFragment();
+                UpdateExercisesFragment fragment = new UpdateExercisesFragment();
                 fragment.setArguments(bundle);
                 fragmentManager.beginTransaction()
                         .addToBackStack(null)

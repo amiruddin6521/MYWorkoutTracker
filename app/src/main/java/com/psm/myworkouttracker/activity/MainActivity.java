@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -41,7 +43,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String id = "1";
+    private String id = "1"; //1
     private ImageView imageView1;
     private TextView txtName, txtEmail;
     private WebServiceCallObj wsc = new WebServiceCallObj();
@@ -49,17 +51,16 @@ public class MainActivity extends AppCompatActivity
     private Fragment frag = null;
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private View profile_nav_progress, profile_nav, header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get the id from login activity.
+        // Get the id from login activity. //2
         /*Intent intent = getIntent();
         id = intent.getStringExtra("id");*/
-
-        loadProfile();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,10 +83,12 @@ public class MainActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        View header= navigationView.getHeaderView(0);
+        header= navigationView.getHeaderView(0);
         txtName = header.findViewById(R.id.txtName1);
         txtEmail = header.findViewById(R.id.txtEmail1);
         imageView1 = header.findViewById(R.id.imageView1);
+        profile_nav_progress = header.findViewById(R.id.profile_nav_progress);
+        profile_nav = header.findViewById(R.id.profile_nav);
 
         imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +100,8 @@ public class MainActivity extends AppCompatActivity
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
+
+        loadProfile();
 
         if (savedInstanceState == null) {
             frag = new WorkoutFragment();
@@ -112,6 +117,27 @@ public class MainActivity extends AppCompatActivity
 
     public String getMyData() {
         return id;
+    }
+
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
     }
 
     @Override
@@ -191,10 +217,10 @@ public class MainActivity extends AppCompatActivity
             frag = new WeightTrackFragment();
         } else if (id == R.id.nav_bodytrack) {
             frag = new BodyTrackFragment();
-        } else if (id == R.id.nav_setting) {
-            frag = new SettingFragment();
         } else if (id == R.id.nav_about) {
             frag = new AboutFragment();
+        } else if (id == R.id.nav_logout) {
+            exitDialog();
         }
 
         if(frag != null) {
@@ -210,49 +236,59 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadProfile() {
-        Runnable run = new Runnable()
-        {
-            String img64, strRespond, name, email;
-            @Override
-            public void run()
+        profile_nav_progress.setVisibility(header.VISIBLE);
+        profile_nav.setVisibility(header.GONE);
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnLoadNavHeader"));
-                params.add(new BasicNameValuePair("_id", id));
+                String img64, strRespond, name, email;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnLoadNavHeader"));
+                    params.add(new BasicNameValuePair("_id", id));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    name = jsnObj.getString("name");
-                    email = jsnObj.getString("email");
-                    img64 = jsnObj.getString("encoded");
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        name = jsnObj.getString("name");
+                        email = jsnObj.getString("email");
+                        img64 = jsnObj.getString("encoded");
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True") && img64.equals("")) {
-                            txtName.setText(name);
-                            txtEmail.setText(email);
-                            imageView1.setImageResource(R.drawable.person);
-                        } else if(strRespond.equals("True")){
-                            byte[] data = Base64.decode(img64, Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            imageView1.setImageBitmap(decodedByte);
-                            txtName.setText(name);
-                            txtEmail.setText(email);
-                        } else {
-                            Toast.makeText(MainActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True") && img64.equals("")) {
+                                txtName.setText(name);
+                                txtEmail.setText(email);
+                                imageView1.setImageResource(R.drawable.person);
+                                profile_nav_progress.setVisibility(header.GONE);
+                                profile_nav.setVisibility(header.VISIBLE);
+                            } else if(strRespond.equals("True")){
+                                byte[] data = Base64.decode(img64, Base64.DEFAULT);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                imageView1.setImageBitmap(decodedByte);
+                                txtName.setText(name);
+                                txtEmail.setText(email);
+                                profile_nav_progress.setVisibility(header.GONE);
+                                profile_nav.setVisibility(header.VISIBLE);
+                            } else {
+                                Toast.makeText(MainActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(MainActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

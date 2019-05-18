@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +37,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class ExercisesTabFragment extends Fragment {
 
@@ -87,7 +93,7 @@ public class ExercisesTabFragment extends Fragment {
                 alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        updateMachineData();
                     }
                 });
 
@@ -135,93 +141,178 @@ public class ExercisesTabFragment extends Fragment {
         return v;
     }
 
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
+    }
+
     //Load data for machine
     public void loadExercise(final String id, final String name) {
-        Runnable run = new Runnable()
-        {
-            String strRespond, type, description, img64;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnLoadExerciseData"));
-                params.add(new BasicNameValuePair("id", id));
-                params.add(new BasicNameValuePair("name", name));
+                String strRespond, type, description, img64;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnLoadExerciseData"));
+                    params.add(new BasicNameValuePair("id", id));
+                    params.add(new BasicNameValuePair("name", name));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    mId = jsnObj.getString("id");
-                    description = jsnObj.getString("description");
-                    type = jsnObj.getString("type");
-                    img64 = jsnObj.getString("encoded");
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        mId = jsnObj.getString("id");
+                        description = jsnObj.getString("description");
+                        type = jsnObj.getString("type");
+                        img64 = jsnObj.getString("encoded");
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progExercises.setVisibility(View.GONE);
-                        fragExercises.setVisibility(View.VISIBLE);
-                        if(strRespond.equals("True") && img64.equals("")) {
-                            edtNameExe.setText(exerciseName);
-                            edtDescExe.setText(description);
-                            edtTypeExe.setText(type);
-                            roundProfile.setImageResource(R.drawable.person);
-                        } else if(strRespond.equals("True")){
-                            edtNameExe.setText(exerciseName);
-                            edtDescExe.setText(description);
-                            edtTypeExe.setText(type);
-                            byte[] data = Base64.decode(img64, Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            roundProfile.setImageBitmap(decodedByte);
-                        } else {
-                            Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progExercises.setVisibility(View.GONE);
+                            fragExercises.setVisibility(View.VISIBLE);
+                            if(strRespond.equals("True") && img64.equals("")) {
+                                edtNameExe.setText(exerciseName);
+                                edtDescExe.setText(description);
+                                edtTypeExe.setText(type);
+                                roundProfile.setImageResource(R.drawable.person);
+                            } else if(strRespond.equals("True")){
+                                edtNameExe.setText(exerciseName);
+                                edtDescExe.setText(description);
+                                edtTypeExe.setText(type);
+                                byte[] data = Base64.decode(img64, Base64.DEFAULT);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                roundProfile.setImageBitmap(decodedByte);
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     //Delete data for machine
     public void deleteExercise(final String id) {
-        Runnable run = new Runnable()
-        {
-            String strRespond;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnDeleteExercise"));
-                params.add(new BasicNameValuePair("id", id));
+                String strRespond;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteExercise"));
+                    params.add(new BasicNameValuePair("id", id));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            Toast.makeText(getActivity(), "Exercise successfully deleted!", Toast.LENGTH_LONG).show();
-                            getActivity().getSupportFragmentManager().popBackStack();
-                        } else {
-                            Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                Toast.makeText(getActivity(), "Exercise successfully deleted!", Toast.LENGTH_LONG).show();
+                                getActivity().getSupportFragmentManager().popBackStack();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //Update machine data
+    public void updateMachineData() {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond = "";
+                String name, description;
+                @Override
+                public void run()
+                {
+                    name = edtNameExe.getText().toString();
+                    description = edtDescExe.getText().toString();
+
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnUpdateMachine"));
+                    params.add(new BasicNameValuePair("varName", name));
+                    params.add(new BasicNameValuePair("varDesc", description));
+                    params.add(new BasicNameValuePair("varId", mId));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                Toast.makeText(getActivity(),"Exercise successfully updated!",Toast.LENGTH_LONG).show();
+                                getActivity().getSupportFragmentManager().popBackStack();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -16,7 +16,7 @@
     <string name="action_register">Register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_password">This password is too short\nAt least 8 characters</string>
     <string name="error_same_password">This new password is same as current password</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
@@ -24,4 +24,6 @@
         completions."
     </string>
     <string name="time"><u>00:10</u></string>
+    <string name="interneterror">No internet connection detected! Please turn on your Mobile Data/WiFi first!</string>
+    <string name="register">Don\'t have account? <u>Register here</u></string>
 </resources>

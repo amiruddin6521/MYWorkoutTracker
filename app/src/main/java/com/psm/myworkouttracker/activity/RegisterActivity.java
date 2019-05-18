@@ -5,6 +5,8 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -88,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 attemptRegister();
+
             }
         });
 
@@ -97,6 +100,27 @@ public class RegisterActivity extends AppCompatActivity {
                 calenderPicker();
             }
         });
+    }
+
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
     }
 
     //Validation for register form
@@ -319,7 +343,7 @@ public class RegisterActivity extends AppCompatActivity {
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
                     bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
                     fileName = new File(Environment.getExternalStorageDirectory(),
                             System.currentTimeMillis() + ".jpg");
                 } catch (IOException e) {
@@ -425,96 +449,102 @@ public class RegisterActivity extends AppCompatActivity {
 
     //Check valid email
     public void checkRegisterData() {
-
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            String email;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                email = txtEmail.getText().toString();
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnCheckEmail"));
-                params.add(new BasicNameValuePair("varEmail", email));
+                String strRespond = "";
+                String email;
+                @Override
+                public void run()
+                {
+                    email = txtEmail.getText().toString();
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnCheckEmail"));
+                    params.add(new BasicNameValuePair("varEmail", email));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            saveRegisterData();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "This email has been used. Please use another email.", Toast.LENGTH_LONG).show();
-                            txtEmail.setFocusable(true);
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                saveRegisterData();
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "This email has been used. Please use another email.", Toast.LENGTH_LONG).show();
+                                txtEmail.setFocusable(true);
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(RegisterActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     //Save register information into database
     public void saveRegisterData() {
-
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            String email, password, name, bdate, gender, weigth, height;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                email = txtEmail.getText().toString();
-                password = txtPassword.getText().toString();
-                name = txtName.getText().toString();
-                bdate = txtBirthday.getText().toString();
-                gender = getRadioGender();
-                weigth = txtWeight.getText().toString();
-                height = txtHeight.getText().toString();
+                String strRespond = "";
+                String email, password, name, bdate, gender, weigth, height;
+                @Override
+                public void run()
+                {
+                    email = txtEmail.getText().toString();
+                    password = txtPassword.getText().toString();
+                    name = txtName.getText().toString();
+                    bdate = txtBirthday.getText().toString();
+                    gender = getRadioGender();
+                    weigth = txtWeight.getText().toString();
+                    height = txtHeight.getText().toString();
 
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnRegister"));
-                params.add(new BasicNameValuePair("varEmail", email));
-                params.add(new BasicNameValuePair("varPassword", password));
-                params.add(new BasicNameValuePair("varName", name));
-                params.add(new BasicNameValuePair("varBdate", bdate));
-                params.add(new BasicNameValuePair("varGender", gender));
-                params.add(new BasicNameValuePair("varWeight", weigth));
-                params.add(new BasicNameValuePair("varHeight", height));
-                params.add(new BasicNameValuePair("encoded_string", encoded_string));
-                params.add(new BasicNameValuePair("image_name", image_name));
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnRegister"));
+                    params.add(new BasicNameValuePair("varEmail", email));
+                    params.add(new BasicNameValuePair("varPassword", password));
+                    params.add(new BasicNameValuePair("varName", name));
+                    params.add(new BasicNameValuePair("varBdate", bdate));
+                    params.add(new BasicNameValuePair("varGender", gender));
+                    params.add(new BasicNameValuePair("varWeight", weigth));
+                    params.add(new BasicNameValuePair("varHeight", height));
+                    params.add(new BasicNameValuePair("encoded_string", encoded_string));
+                    params.add(new BasicNameValuePair("image_name", image_name));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
-                            RegisterActivity.this.finish();
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
+                                RegisterActivity.this.finish();
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(RegisterActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 }

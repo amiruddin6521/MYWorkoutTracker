@@ -9,12 +9,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
 import com.psm.myworkouttracker.adapter.ExercisesSectionsPagerAdapter;
 
-public class AddEditExercisesFragment extends Fragment {
+public class UpdateExercisesFragment extends Fragment {
 
     private ExercisesSectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -23,7 +22,7 @@ public class AddEditExercisesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_addeditexercises, container, false);
+        View v = inflater.inflate(R.layout.fragment_updateexercises, container, false);
 
         Bundle bundle = getArguments();
         exerciseName = bundle.getString("exercise");

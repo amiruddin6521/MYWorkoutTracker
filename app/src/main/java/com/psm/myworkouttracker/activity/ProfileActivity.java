@@ -10,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -76,7 +78,11 @@ public class ProfileActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectImage();
+                if(haveNetwork()) {
+                    selectImage();
+                } else if(!haveNetwork()) {
+                    Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -113,21 +119,25 @@ public class ProfileActivity extends AppCompatActivity {
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean cancel = false;
-                        View focusView = null;
-                        String data = edtUpdate.getText().toString();
-                        String attr = "name";
-                        if (TextUtils.isEmpty(data)) {
-                            edtUpdate.setError(getString(R.string.error_field_required));
-                            focusView = edtUpdate;
-                            cancel = true;
-                        }
-                        if (cancel) {
-                            focusView.requestFocus();
-                        } else {
+                        if(haveNetwork()) {
+                            boolean cancel = false;
+                            View focusView = null;
+                            String data = edtUpdate.getText().toString();
+                            String attr = "name";
+                            if (TextUtils.isEmpty(data)) {
+                                edtUpdate.setError(getString(R.string.error_field_required));
+                                focusView = edtUpdate;
+                                cancel = true;
+                            }
+                            if (cancel) {
+                                focusView.requestFocus();
+                            } else {
 
-                            updateData(id,attr,data);
-                            dialog.cancel();
+                                updateData(id,attr,data);
+                                dialog.cancel();
+                            }
+                        } else if(!haveNetwork()) {
+                            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -155,20 +165,24 @@ public class ProfileActivity extends AppCompatActivity {
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean cancel = false;
-                        View focusView = null;
-                        String data = edtUpdate.getText().toString();
-                        if (TextUtils.isEmpty(data)) {
-                            edtUpdate.setError(getString(R.string.error_field_required));
-                            focusView = edtUpdate;
-                            cancel = true;
-                        }
-                        if (cancel) {
-                            focusView.requestFocus();
-                        } else {
+                        if(haveNetwork()) {
+                            boolean cancel = false;
+                            View focusView = null;
+                            String data = edtUpdate.getText().toString();
+                            if (TextUtils.isEmpty(data)) {
+                                edtUpdate.setError(getString(R.string.error_field_required));
+                                focusView = edtUpdate;
+                                cancel = true;
+                            }
+                            if (cancel) {
+                                focusView.requestFocus();
+                            } else {
 
-                            updateWeight(id,data);
-                            dialog.cancel();
+                                updateWeight(id,data);
+                                dialog.cancel();
+                            }
+                        } else if(!haveNetwork()) {
+                            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -189,21 +203,25 @@ public class ProfileActivity extends AppCompatActivity {
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean cancel = false;
-                        View focusView = null;
-                        String data = edtUpdate.getText().toString();
-                        String attr = "height";
-                        if (TextUtils.isEmpty(data)) {
-                            edtUpdate.setError(getString(R.string.error_field_required));
-                            focusView = edtUpdate;
-                            cancel = true;
-                        }
-                        if (cancel) {
-                            focusView.requestFocus();
-                        } else {
+                        if(haveNetwork()) {
+                            boolean cancel = false;
+                            View focusView = null;
+                            String data = edtUpdate.getText().toString();
+                            String attr = "height";
+                            if (TextUtils.isEmpty(data)) {
+                                edtUpdate.setError(getString(R.string.error_field_required));
+                                focusView = edtUpdate;
+                                cancel = true;
+                            }
+                            if (cancel) {
+                                focusView.requestFocus();
+                            } else {
 
-                            updateData(id,attr,data);
-                            dialog.cancel();
+                                updateData(id,attr,data);
+                                dialog.cancel();
+                            }
+                        } else if(!haveNetwork()) {
+                            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -231,12 +249,16 @@ public class ProfileActivity extends AppCompatActivity {
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int selectedId = radGender.getCheckedRadioButtonId();
-                        radMale = dialog.findViewById(selectedId);
-                        String data = radMale.getText().toString();
-                        String attr = "gender";
-                        updateData(id,attr,data);
-                        dialog.cancel();
+                        if(haveNetwork()) {
+                            int selectedId = radGender.getCheckedRadioButtonId();
+                            radMale = dialog.findViewById(selectedId);
+                            String data = radMale.getText().toString();
+                            String attr = "gender";
+                            updateData(id,attr,data);
+                            dialog.cancel();
+                        } else if(!haveNetwork()) {
+                            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
             }
@@ -256,42 +278,67 @@ public class ProfileActivity extends AppCompatActivity {
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean cancel = false;
-                        View focusView = null;
-                        String data1 = edtCurrPass.getText().toString();
-                        String data2 = edtNewPass.getText().toString();
-                        if (TextUtils.isEmpty(data2)) {
-                            edtNewPass.setError(getString(R.string.error_field_required));
-                            focusView = edtNewPass;
-                            cancel = true;
-                        } else if (!isPasswordValid(data2)) {
-                            edtNewPass.setError(getString(R.string.error_invalid_password));
-                            focusView = edtNewPass;
-                            cancel = true;
-                        } else if (data2.equals(data1)) {
-                            edtNewPass.setError(getString(R.string.error_same_password));
-                            focusView = edtNewPass;
-                            cancel = true;
-                        }
-                        if (TextUtils.isEmpty(data1)) {
-                            edtCurrPass.setError(getString(R.string.error_field_required));
-                            focusView = edtCurrPass;
-                            cancel = true;
-                        } else if (!isPasswordValid(data1)) {
-                            edtCurrPass.setError(getString(R.string.error_invalid_password));
-                            focusView = edtCurrPass;
-                            cancel = true;
-                        }
-                        if (cancel) {
-                            focusView.requestFocus();
-                        } else {
-                            getCurrPassword(data1,data2);
-                            dialog.cancel();
+                        if(haveNetwork()) {
+                            boolean cancel = false;
+                            View focusView = null;
+                            String data1 = edtCurrPass.getText().toString();
+                            String data2 = edtNewPass.getText().toString();
+                            if (TextUtils.isEmpty(data2)) {
+                                edtNewPass.setError(getString(R.string.error_field_required));
+                                focusView = edtNewPass;
+                                cancel = true;
+                            } else if (!isPasswordValid(data2)) {
+                                edtNewPass.setError(getString(R.string.error_invalid_password));
+                                focusView = edtNewPass;
+                                cancel = true;
+                            } else if (data2.equals(data1)) {
+                                edtNewPass.setError(getString(R.string.error_same_password));
+                                focusView = edtNewPass;
+                                cancel = true;
+                            }
+                            if (TextUtils.isEmpty(data1)) {
+                                edtCurrPass.setError(getString(R.string.error_field_required));
+                                focusView = edtCurrPass;
+                                cancel = true;
+                            } else if (!isPasswordValid(data1)) {
+                                edtCurrPass.setError(getString(R.string.error_invalid_password));
+                                focusView = edtCurrPass;
+                                cancel = true;
+                            }
+                            if (cancel) {
+                                focusView.requestFocus();
+                            } else {
+                                getCurrPassword(data1,data2);
+                                dialog.cancel();
+                            }
+                        } else if(!haveNetwork()) {
+                            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
                         }
                     }
                 });
             }
         });
+    }
+
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
     }
 
     /**
@@ -430,11 +477,11 @@ public class ProfileActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
-                imgPhoto.setImageURI(resultUri);
+                //imgPhoto.setImageURI(resultUri);
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
                     bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
                     fileName = new File(Environment.getExternalStorageDirectory(),
                             System.currentTimeMillis() + ".jpg");
                 } catch (IOException e) {
@@ -448,12 +495,16 @@ public class ProfileActivity extends AppCompatActivity {
                 Exception error = result.getError();
             }
         } else if (requestCode == 2) {
-            Uri selectedImageUri = data.getData();
-            CropImage.activity(selectedImageUri).start(this);
+            if (data != null) {
+                Uri selectedImageUri = data.getData();
+                CropImage.activity(selectedImageUri).start(this);
+            }
         } else if (requestCode == 1) {
-            File file = new File(currentPhotoPath);
-            Uri selectedImageUri = Uri.fromFile(file);
-            CropImage.activity(selectedImageUri).start(this);
+            if (currentPhotoPath != null) {
+                File file = new File(currentPhotoPath);
+                Uri selectedImageUri = Uri.fromFile(file);
+                CropImage.activity(selectedImageUri).start(this);
+            }
         }
 
 
@@ -569,7 +620,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     //Update image
     public void updateImage(final String encoded_string, final String image_name) {
-
+        showProgress(true);
         Runnable run = new Runnable()
         {
             String strRespond = "";
@@ -594,8 +645,10 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
+                            loadProfile();
                             Toast.makeText(ProfileActivity.this, "Picture successfully changed!", Toast.LENGTH_LONG).show();
                         } else {
+                            showProgress(false);
                             Toast.makeText(ProfileActivity.this, "Picture failed to change.", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -608,7 +661,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     //Delete image
     public void deleteImage() {
-
+        showProgress(true);
         Runnable run = new Runnable()
         {
             String strRespond = "";
@@ -631,8 +684,10 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if(strRespond.equals("True")) {
+                            loadProfile();
                             Toast.makeText(ProfileActivity.this, "Picture successfully removed!", Toast.LENGTH_LONG).show();
                         } else {
+                            showProgress(false);
                             Toast.makeText(ProfileActivity.this, "There is no picture to remove.", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -646,218 +701,239 @@ public class ProfileActivity extends AppCompatActivity {
     //Load all data from user profile
     public void loadProfile() {
         showProgress(true);
-        Runnable run = new Runnable()
-        {
-            String strRespond, name, email, dob, weight, height, gender, passworddate, img64;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnLoadProfile"));
-                params.add(new BasicNameValuePair("id", id));
+                String strRespond, name, email, dob, weight, height, gender, passworddate, img64;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnLoadProfile"));
+                    params.add(new BasicNameValuePair("id", id));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    email = jsnObj.getString("email");
-                    name = jsnObj.getString("name");
-                    dob = jsnObj.getString("dob");
-                    weight = jsnObj.getString("weight");
-                    height = jsnObj.getString("height");
-                    gender = jsnObj.getString("gender");
-                    passworddate = jsnObj.getString("pdate");
-                    img64 = jsnObj.getString("encoded");
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        email = jsnObj.getString("email");
+                        name = jsnObj.getString("name");
+                        dob = jsnObj.getString("dob");
+                        weight = jsnObj.getString("weight");
+                        height = jsnObj.getString("height");
+                        gender = jsnObj.getString("gender");
+                        passworddate = jsnObj.getString("pdate");
+                        img64 = jsnObj.getString("encoded");
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True") && img64.equals("")) {
-                            txtEmail.setText(email);
-                            txtName.setText(name);
-                            txtDob.setText(dob);
-                            txtWeight.setText(weight);
-                            txtHeight.setText(height);
-                            txtGender.setText(gender);
-                            txtPdate.setText(passworddate);
-                            imgPhoto.setImageResource(R.drawable.person);
-                            showProgress(false);
-                        } else if(strRespond.equals("True")){
-                            txtEmail.setText(email);
-                            txtName.setText(name);
-                            txtDob.setText(dob);
-                            txtWeight.setText(weight);
-                            txtHeight.setText(height);
-                            txtGender.setText(gender);
-                            txtPdate.setText(passworddate);
-                            byte[] data = Base64.decode(img64, Base64.DEFAULT);
-                            Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            imgPhoto.setImageBitmap(decodedByte);
-                            showProgress(false);
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                            showProgress(false);
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True") && img64.equals("")) {
+                                txtEmail.setText(email);
+                                txtName.setText(name);
+                                txtDob.setText(dob);
+                                txtWeight.setText(weight);
+                                txtHeight.setText(height);
+                                txtGender.setText(gender);
+                                txtPdate.setText(passworddate);
+                                imgPhoto.setImageResource(R.drawable.person);
+                                showProgress(false);
+                            } else if(strRespond.equals("True")){
+                                txtEmail.setText(email);
+                                txtName.setText(name);
+                                txtDob.setText(dob);
+                                txtWeight.setText(weight);
+                                txtHeight.setText(height);
+                                txtGender.setText(gender);
+                                txtPdate.setText(passworddate);
+                                byte[] data = Base64.decode(img64, Base64.DEFAULT);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                imgPhoto.setImageBitmap(decodedByte);
+                                showProgress(false);
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                                showProgress(false);
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+            showProgress(false);
+        }
     }
 
     //Update specific data
     public void updateData(final String idS, final String attrS, final String data) {
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnUpdateProfile"));
-                params.add(new BasicNameValuePair("varId", idS));
-                params.add(new BasicNameValuePair("varAttr", attrS));
-                params.add(new BasicNameValuePair("varData", data));
+                String strRespond = "";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnUpdateProfile"));
+                    params.add(new BasicNameValuePair("varId", idS));
+                    params.add(new BasicNameValuePair("varAttr", attrS));
+                    params.add(new BasicNameValuePair("varData", data));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            loadProfile();
-                            Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                loadProfile();
+                                Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     //Update weight data
     public void updateWeight(final String idS, final String data) {
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnUpdateWeight"));
-                params.add(new BasicNameValuePair("varId", idS));
-                params.add(new BasicNameValuePair("varData", data));
+                String strRespond = "";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnUpdateWeight"));
+                    params.add(new BasicNameValuePair("varId", idS));
+                    params.add(new BasicNameValuePair("varData", data));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            loadProfile();
-                            Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                loadProfile();
+                                Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     //Change new password
     public void updatePassword(final String data) {
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnUpdatePassword"));
-                params.add(new BasicNameValuePair("varId", id));
-                params.add(new BasicNameValuePair("varData", data));
+                String strRespond = "";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnUpdatePassword"));
+                    params.add(new BasicNameValuePair("varId", id));
+                    params.add(new BasicNameValuePair("varData", data));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            loadProfile();
-                            Toast.makeText(ProfileActivity.this, "Password successfully changed!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "Password failed to change.", Toast.LENGTH_SHORT).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                loadProfile();
+                                Toast.makeText(ProfileActivity.this, "Password successfully changed!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "Password failed to change.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     //Check current password
     public void getCurrPassword(final String currPass, final String newPass) {
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnGetCurrPassword"));
-                params.add(new BasicNameValuePair("varId", id));
-                params.add(new BasicNameValuePair("varPassword", currPass));
+                String strRespond = "";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnGetCurrPassword"));
+                    params.add(new BasicNameValuePair("varId", id));
+                    params.add(new BasicNameValuePair("varPassword", currPass));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            updatePassword(newPass);
-                        } else {
-                            Toast.makeText(ProfileActivity.this, "You has entered wrong current password.", Toast.LENGTH_SHORT).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                updatePassword(newPass);
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "You has entered wrong current password.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 }

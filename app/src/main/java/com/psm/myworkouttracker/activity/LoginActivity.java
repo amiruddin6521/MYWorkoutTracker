@@ -3,7 +3,10 @@ package com.psm.myworkouttracker.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,6 +68,27 @@ public class LoginActivity extends AppCompatActivity {
                 attempRegister();
             }
         });
+    }
+
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
     }
 
     /**
@@ -173,47 +197,52 @@ public class LoginActivity extends AppCompatActivity {
     //Check login information
     public void checkLogin() {
         showProgress(true);
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            String name, id;
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnLogin"));
-                params.add(new BasicNameValuePair("varEmail", email));
-                params.add(new BasicNameValuePair("varPassword", password));
+                String strRespond = "";
+                String name, id;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnLogin"));
+                    params.add(new BasicNameValuePair("varEmail", email));
+                    params.add(new BasicNameValuePair("varPassword", password));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
-                    id = jsnObj.getString("id");
-                    name = jsnObj.getString("name");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+                        id = jsnObj.getString("id");
+                        name = jsnObj.getString("name");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("id", id);
-                            startActivity(intent);
-                            LoginActivity.this.finish();
-                        } else {
-                            showProgress(false);
-                            Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("id", id);
+                                startActivity(intent);
+                                LoginActivity.this.finish();
+                            } else {
+                                showProgress(false);
+                                Toast.makeText(LoginActivity.this, "You has entered wrong Email or Password.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(LoginActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+            showProgress(false);
+        }
     }
 
 }

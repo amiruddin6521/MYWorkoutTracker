@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,6 +47,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class WorkoutTabFragment extends Fragment {
 
@@ -282,6 +286,27 @@ public class WorkoutTabFragment extends Fragment {
         return v;
     }
 
+    private boolean haveNetwork() {
+        boolean haveWiFi = false;
+        boolean haveMobileData = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+        for(NetworkInfo info : networkInfo) {
+            if(info.getTypeName().equalsIgnoreCase("WIFI")) {
+                if(info.isConnected()) {
+                    haveWiFi = true;
+                }
+            }
+            if(info.getTypeName().equalsIgnoreCase("MOBILE")) {
+                if(info.isConnected()) {
+                    haveMobileData = true;
+                }
+            }
+        }
+        return haveMobileData || haveWiFi;
+    }
+
     private View.OnFocusChangeListener touchRazEdit = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
@@ -426,6 +451,9 @@ public class WorkoutTabFragment extends Fragment {
                     e.printStackTrace();
                 }
 
+                if(getActivity() == null)
+                    return;
+
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -454,6 +482,8 @@ public class WorkoutTabFragment extends Fragment {
                 Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
             }
         });
+        progWorkout.setVisibility(View.GONE);
+        fragWorkout.setVisibility(View.VISIBLE);
     }
 
     public void loadWorkoutDataC(final String machine) {
@@ -496,6 +526,9 @@ public class WorkoutTabFragment extends Fragment {
                     e.printStackTrace();
                 }
 
+                if(getActivity() == null)
+                    return;
+
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -524,103 +557,118 @@ public class WorkoutTabFragment extends Fragment {
                 Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
             }
         });
+        progWorkout.setVisibility(View.GONE);
+        fragWorkout.setVisibility(View.VISIBLE);
     }
 
     public void loadListData() {
-        Runnable run = new Runnable()
-        {
-            @Override
-            public void run()
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
-                params.add(new BasicNameValuePair("id", uId));
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnMachineList"));
+                    params.add(new BasicNameValuePair("id", uId));
 
-                jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                jsnObj = null;
-                dataValues = new ArrayList<>();
+                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                    jsnObj = null;
+                    dataValues = new ArrayList<>();
 
-                try{
-                    if (jsnArr != null) {
-                        for (int i = 0; i < jsnArr.length(); i++) {
-                            jsnObj = jsnArr.getJSONObject(i);
-                            String data = jsnObj.getString("name");
-                            dataValues.add(data);
+                    try{
+                        if (jsnArr != null) {
+                            for (int i = 0; i < jsnArr.length(); i++) {
+                                jsnObj = jsnArr.getJSONObject(i);
+                                String data = jsnObj.getString("name");
+                                dataValues.add(data);
+                            }
                         }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                } catch (JSONException e){
-                    e.printStackTrace();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(dataValues != null) {
+                                adapter = new AutoCompleteAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, dataValues);
+                                edtMachine.setAdapter(adapter);
+                                edtMachine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        String itemName = parent.getItemAtPosition(position).toString();
+                                        loadMachine(itemName);
+                                        hideKeyboard(edtMachine);
+                                        edtMachine.clearFocus();
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(dataValues != null) {
-                            adapter = new AutoCompleteAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, dataValues);
-                            edtMachine.setAdapter(adapter);
-                            edtMachine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    String itemName = parent.getItemAtPosition(position).toString();
-                                    loadMachine(itemName);
-                                    hideKeyboard(edtMachine);
-                                    edtMachine.clearFocus();
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     public void loadMachine(final String name) {
         progWorkout.setVisibility(View.VISIBLE);
-        Runnable run = new Runnable()
-        {
-            String strRespond, type;
-            @Override
-            public void run()
+        fragWorkout.setVisibility(View.GONE);
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnGetMachine"));
-                params.add(new BasicNameValuePair("id", uId));
-                params.add(new BasicNameValuePair("name", name));
+                String strRespond, type;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnGetMachine"));
+                    params.add(new BasicNameValuePair("id", uId));
+                    params.add(new BasicNameValuePair("name", name));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    type = jsnObj.getString("type");
-                    mId = jsnObj.getString("id");
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        type = jsnObj.getString("type");
+                        mId = jsnObj.getString("id");
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            setUIData(name, type);
-                        } else {
-                            Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                setUIData(name, type);
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     public void setUIData(String name, String type) {
         if(type.equals("Cardio")) {
             bodybuilding.setVisibility(View.GONE);
             cardio.setVisibility(View.VISIBLE);
-            progWorkout.setVisibility(View.GONE);
-            fragWorkout.setVisibility(View.VISIBLE);
             edtMachine.setText(name);
             txtType.setText(type);
             edtSets.setText("1");
@@ -632,8 +680,6 @@ public class WorkoutTabFragment extends Fragment {
         } else {
             cardio.setVisibility(View.GONE);
             bodybuilding.setVisibility(View.VISIBLE);
-            progWorkout.setVisibility(View.GONE);
-            fragWorkout.setVisibility(View.VISIBLE);
             edtMachine.setText(name);
             txtType.setText(type);
             edtDist.setText("5.0");
@@ -664,106 +710,122 @@ public class WorkoutTabFragment extends Fragment {
 
     //Save bodybuilding data
     public void saveBData() {
-
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            String sets, reps, weight, date;
-            @Override
-            public void run()
+        progWorkout.setVisibility(View.VISIBLE);
+        fragWorkout.setVisibility(View.GONE);
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                sets = edtSets.getText().toString();
-                reps = edtReps.getText().toString();
-                weight = edtWeight.getText().toString();
-                date = dateUpd.getText().toString();
+                String strRespond = "";
+                String sets, reps, weight, date;
+                @Override
+                public void run()
+                {
+                    sets = edtSets.getText().toString();
+                    reps = edtReps.getText().toString();
+                    weight = edtWeight.getText().toString();
+                    date = dateUpd.getText().toString();
 
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnAddWorkoutB"));
-                params.add(new BasicNameValuePair("varSets", sets));
-                params.add(new BasicNameValuePair("varReps", reps));
-                params.add(new BasicNameValuePair("varWeight", weight));
-                params.add(new BasicNameValuePair("varDate", date));
-                params.add(new BasicNameValuePair("varMachine", mId));
-                params.add(new BasicNameValuePair("varUser", uId));
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnAddWorkoutB"));
+                    params.add(new BasicNameValuePair("varSets", sets));
+                    params.add(new BasicNameValuePair("varReps", reps));
+                    params.add(new BasicNameValuePair("varWeight", weight));
+                    params.add(new BasicNameValuePair("varDate", date));
+                    params.add(new BasicNameValuePair("varMachine", mId));
+                    params.add(new BasicNameValuePair("varUser", uId));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            String name = edtMachine.getText().toString();
-                            loadWorkoutDataB(name);
-                            long date = System.currentTimeMillis();
-                            SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
-                            String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
-                            Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                String name = edtMachine.getText().toString();
+                                loadWorkoutDataB(name);
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
+                                String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
+                                Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     //Save bodybuilding data
     public void saveCData() {
-
-        Runnable run = new Runnable()
-        {
-            String strRespond = "";
-            String dist, durr, date;
-            @Override
-            public void run()
+        progWorkout.setVisibility(View.VISIBLE);
+        fragWorkout.setVisibility(View.GONE);
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
             {
-                dist = edtDist.getText().toString();
-                durr = edtDurr.getText().toString();
-                date = dateUpd.getText().toString();
+                String strRespond = "";
+                String dist, durr, date;
+                @Override
+                public void run()
+                {
+                    dist = edtDist.getText().toString();
+                    durr = edtDurr.getText().toString();
+                    date = dateUpd.getText().toString();
 
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("selectFn", "fnAddWorkoutC"));
-                params.add(new BasicNameValuePair("varDist", dist));
-                params.add(new BasicNameValuePair("varDurr", durr));
-                params.add(new BasicNameValuePair("varDate", date));
-                params.add(new BasicNameValuePair("varMachine", mId));
-                params.add(new BasicNameValuePair("varUser", uId));
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnAddWorkoutC"));
+                    params.add(new BasicNameValuePair("varDist", dist));
+                    params.add(new BasicNameValuePair("varDurr", durr));
+                    params.add(new BasicNameValuePair("varDate", date));
+                    params.add(new BasicNameValuePair("varMachine", mId));
+                    params.add(new BasicNameValuePair("varUser", uId));
 
-                try{
-                    jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
-                    strRespond = jsnObj.getString("respond");
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
-                    e.printStackTrace();
-                }
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(strRespond.equals("True")) {
-                            String name = edtMachine.getText().toString();
-                            loadWorkoutDataC(name);
-                            long date = System.currentTimeMillis();
-                            SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
-                            String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
-                            Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
-                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        };
-        Thread thr = new Thread(run);
-        thr.start();
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                String name = edtMachine.getText().toString();
+                                loadWorkoutDataC(name);
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
+                                String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
+                                Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     public void hideKeyboard(View view) {

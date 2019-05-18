@@ -7,12 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
-import com.psm.myworkouttracker.fragment.AddEditExercisesFragment;
 import com.psm.myworkouttracker.fragment.ExercisesHistoryTabFragment;
 import com.psm.myworkouttracker.fragment.ExercisesTabFragment;
-import com.psm.myworkouttracker.fragment.GraphTabFragment;
-import com.psm.myworkouttracker.fragment.HistoryTabFragment;
-import com.psm.myworkouttracker.fragment.WorkoutTabFragment;
 
 import java.util.HashMap;
 import java.util.Map;
