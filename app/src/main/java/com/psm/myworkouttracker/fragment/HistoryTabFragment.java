@@ -1,11 +1,13 @@
 package com.psm.myworkouttracker.fragment;
 
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +40,7 @@ public class HistoryTabFragment extends Fragment {
     private String uId, mId, tId;
     private Spinner spnExercise, spnDate;
     private ListView listHistory;
-    private List<String> bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr, exValues, dtValues;
+    private List<String> idB, idC, bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr, exValues, dtValues;
     private WorkoutTabAdapterB bAdapter;
     private WorkoutTabAdapterC cAdapter;
     private JSONObject jsnObj = new JSONObject();
@@ -70,6 +72,7 @@ public class HistoryTabFragment extends Fragment {
                 progHistory.setVisibility(View.VISIBLE);
                 fragHistory.setVisibility(View.GONE);
                 String selected = parent.getItemAtPosition(position).toString();
+                spnDate.setAdapter(null);
                 loadMachine(selected);
             }
 
@@ -179,7 +182,6 @@ public class HistoryTabFragment extends Fragment {
 
     public void loadExerciseSpn() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, exValues);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnExercise.setAdapter(adapter);
         String exercise = spnExercise.getSelectedItem().toString();
         loadMachine(exercise);
@@ -246,7 +248,7 @@ public class HistoryTabFragment extends Fragment {
                         jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                         jsnObj = null;
                         dtValues = new ArrayList<>();
-
+                        dtValues.add("All");
                         try{
                             if (jsnArr != null) {
                                 for (int i = 0; i < jsnArr.length(); i++) {
@@ -290,7 +292,7 @@ public class HistoryTabFragment extends Fragment {
                         jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                         jsnObj = null;
                         dtValues = new ArrayList<>();
-
+                        dtValues.add("All");
                         try{
                             if (jsnArr != null) {
                                 for (int i = 0; i < jsnArr.length(); i++) {
@@ -327,9 +329,10 @@ public class HistoryTabFragment extends Fragment {
     }
 
     public void loadDateSpn() {
-        if(!dtValues.isEmpty()) {
+        if(dtValues.size() > 1) {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, dtValues);
             spnDate.setAdapter(adapter);
+            spnDate.setSelection(1);
             String exercise = spnExercise.getSelectedItem().toString();
             String date = spnDate.getSelectedItem().toString();
             if(tId.equals("Cardio")){
@@ -346,81 +349,167 @@ public class HistoryTabFragment extends Fragment {
 
     public void loadWorkoutDataB(final String machine, final String date) {
         if(haveNetwork()) {
-            Runnable run = new Runnable()
-            {
-                @Override
-                public void run()
+            if(date.equals("All")) {
+                Runnable run = new Runnable()
                 {
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateB"));
-                    params.add(new BasicNameValuePair("mId", mId));
-                    params.add(new BasicNameValuePair("uId", uId));
-                    params.add(new BasicNameValuePair("date", date));
+                    @Override
+                    public void run()
+                    {
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListB"));
+                        params.add(new BasicNameValuePair("mId", mId));
+                        params.add(new BasicNameValuePair("uId", uId));
 
-                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                    jsnObj = null;
-                    bMachine = new ArrayList<>();
-                    bDate = new ArrayList<>();
-                    bTime = new ArrayList<>();
-                    sets = new ArrayList<>();
-                    reps = new ArrayList<>();
-                    weight = new ArrayList<>();
+                        jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                        jsnObj = null;
+                        idB = new ArrayList<>();
+                        bMachine = new ArrayList<>();
+                        bDate = new ArrayList<>();
+                        bTime = new ArrayList<>();
+                        sets = new ArrayList<>();
+                        reps = new ArrayList<>();
+                        weight = new ArrayList<>();
 
-                    try{
-                        if (jsnArr != null) {
-                            for (int i = 0; i < jsnArr.length(); i++) {
-                                jsnObj = jsnArr.getJSONObject(i);
-                                String data1 = jsnObj.getString("bDate");
-                                String data2 = jsnObj.getString("bTime");
-                                String data3 = jsnObj.getString("sets");
-                                String data4 = jsnObj.getString("reps");
-                                String data5 = jsnObj.getString("weight");
+                        try{
+                            if (jsnArr != null) {
+                                for (int i = 0; i < jsnArr.length(); i++) {
+                                    jsnObj = jsnArr.getJSONObject(i);
+                                    String data0 = jsnObj.getString("_id");
+                                    String data1 = jsnObj.getString("bDate");
+                                    String data2 = jsnObj.getString("bTime");
+                                    String data3 = jsnObj.getString("sets");
+                                    String data4 = jsnObj.getString("reps");
+                                    String data5 = jsnObj.getString("weight");
 
-
-                                bMachine.add(machine);
-                                bDate.add(data1);
-                                bTime.add(data2);
-                                sets.add(data3);
-                                reps.add(data4);
-                                weight.add(data5);
+                                    bMachine.add(machine);
+                                    idB.add(data0);
+                                    bDate.add(data1);
+                                    bTime.add(data2);
+                                    sets.add(data3);
+                                    reps.add(data4);
+                                    weight.add(data5);
+                                }
                             }
+                        } catch (JSONException e){
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e){
-                        e.printStackTrace();
+
+                        if(getActivity() == null)
+                            return;
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(bDate != null)
+                                {
+                                    loadDataB();
+                                } else {
+                                    Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        });
                     }
+                };
+                Thread thr = new Thread(run);
+                thr.start();
+            } else {
+                Runnable run = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateB"));
+                        params.add(new BasicNameValuePair("mId", mId));
+                        params.add(new BasicNameValuePair("uId", uId));
+                        params.add(new BasicNameValuePair("date", date));
 
-                    if(getActivity() == null)
-                        return;
+                        jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                        jsnObj = null;
+                        idB = new ArrayList<>();
+                        bMachine = new ArrayList<>();
+                        bDate = new ArrayList<>();
+                        bTime = new ArrayList<>();
+                        sets = new ArrayList<>();
+                        reps = new ArrayList<>();
+                        weight = new ArrayList<>();
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(bDate != null)
-                            {
-                                loadDataB();
-                            } else {
-                                Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                        try{
+                            if (jsnArr != null) {
+                                for (int i = 0; i < jsnArr.length(); i++) {
+                                    jsnObj = jsnArr.getJSONObject(i);
+                                    String data0 = jsnObj.getString("_id");
+                                    String data1 = jsnObj.getString("bDate");
+                                    String data2 = jsnObj.getString("bTime");
+                                    String data3 = jsnObj.getString("sets");
+                                    String data4 = jsnObj.getString("reps");
+                                    String data5 = jsnObj.getString("weight");
+
+                                    bMachine.add(machine);
+                                    idB.add(data0);
+                                    bDate.add(data1);
+                                    bTime.add(data2);
+                                    sets.add(data3);
+                                    reps.add(data4);
+                                    weight.add(data5);
+                                }
                             }
-
+                        } catch (JSONException e){
+                            e.printStackTrace();
                         }
-                    });
-                }
-            };
-            Thread thr = new Thread(run);
-            thr.start();
+
+                        if(getActivity() == null)
+                            return;
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(bDate != null)
+                                {
+                                    loadDataB();
+                                } else {
+                                    Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        });
+                    }
+                };
+                Thread thr = new Thread(run);
+                thr.start();
+            }
         } else if(!haveNetwork()) {
             loadExerciseData();
         }
     }
 
     public void loadDataB() {
-        bAdapter = new WorkoutTabAdapterB(getActivity(), bMachine, bDate, bTime, sets, reps, weight);
+        bAdapter = new WorkoutTabAdapterB(getActivity(), idB, bMachine, bDate, bTime, sets, reps, weight);
         listHistory.setAdapter(bAdapter);
         listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
+                final String itemID = bAdapter.getItemID(position);
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+                alertDialog.setTitle("Delete Exercise Record");
+                alertDialog.setMessage("Are you sure you want to delete?");
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteExerciseB(itemID);
+                    }
+                });
+
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
             }
         });
         progHistory.setVisibility(View.GONE);
@@ -429,42 +518,185 @@ public class HistoryTabFragment extends Fragment {
 
     public void loadWorkoutDataC(final String machine, final String date) {
         if(haveNetwork()) {
+            if(date.equals("All")) {
+                Runnable run = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListC"));
+                        params.add(new BasicNameValuePair("mId", mId));
+                        params.add(new BasicNameValuePair("uId", uId));
+
+                        jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                        jsnObj = null;
+                        idC = new ArrayList<>();
+                        cMachine = new ArrayList<>();
+                        cDate = new ArrayList<>();
+                        cTime = new ArrayList<>();
+                        dist = new ArrayList<>();
+                        durr = new ArrayList<>();
+
+                        try{
+                            if (jsnArr != null) {
+                                for (int i = 0; i < jsnArr.length(); i++) {
+                                    jsnObj = jsnArr.getJSONObject(i);
+                                    String data0 = jsnObj.getString("_id");
+                                    String data1 = jsnObj.getString("cDate");
+                                    String data2 = jsnObj.getString("cTime");
+                                    String data3 = jsnObj.getString("distance");
+                                    String data4 = jsnObj.getString("duration");
+
+                                    cMachine.add(machine);
+                                    idC.add(data0);
+                                    cDate.add(data1);
+                                    cTime.add(data2);
+                                    dist.add(data3);
+                                    durr.add(data4);
+                                }
+                            }
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+
+                        if(getActivity() == null)
+                            return;
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(cDate != null)
+                                {
+                                    loadDataC();
+                                } else {
+                                    Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        });
+                    }
+                };
+                Thread thr = new Thread(run);
+                thr.start();
+            } else {
+                Runnable run = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateC"));
+                        params.add(new BasicNameValuePair("mId", mId));
+                        params.add(new BasicNameValuePair("uId", uId));
+                        params.add(new BasicNameValuePair("date", date));
+
+                        jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                        jsnObj = null;
+                        idC = new ArrayList<>();
+                        cMachine = new ArrayList<>();
+                        cDate = new ArrayList<>();
+                        cTime = new ArrayList<>();
+                        dist = new ArrayList<>();
+                        durr = new ArrayList<>();
+
+                        try{
+                            if (jsnArr != null) {
+                                for (int i = 0; i < jsnArr.length(); i++) {
+                                    jsnObj = jsnArr.getJSONObject(i);
+                                    String data0 = jsnObj.getString("_id");
+                                    String data1 = jsnObj.getString("cDate");
+                                    String data2 = jsnObj.getString("cTime");
+                                    String data3 = jsnObj.getString("distance");
+                                    String data4 = jsnObj.getString("duration");
+
+
+                                    cMachine.add(machine);
+                                    idC.add(data0);
+                                    cDate.add(data1);
+                                    cTime.add(data2);
+                                    dist.add(data3);
+                                    durr.add(data4);
+                                }
+                            }
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+
+                        if(getActivity() == null)
+                            return;
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(cDate != null)
+                                {
+                                    loadDataC();
+                                } else {
+                                    Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        });
+                    }
+                };
+                Thread thr = new Thread(run);
+                thr.start();
+            }
+        } else if(!haveNetwork()) {
+            loadExerciseData();
+        }
+    }
+
+    public void loadDataC() {
+        cAdapter = new WorkoutTabAdapterC(getActivity(), idC, cMachine, cDate, cTime, dist, durr);
+        listHistory.setAdapter(cAdapter);
+        listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final String itemID = cAdapter.getItemID(position);
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+                alertDialog.setTitle("Delete Exercise Record");
+                alertDialog.setMessage("Are you sure you want to delete?");
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteExerciseC(itemID);
+                    }
+                });
+
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
+            }
+        });
+        progHistory.setVisibility(View.GONE);
+        fragHistory.setVisibility(View.VISIBLE);
+    }
+
+    //Delete exercise data for body building
+    public void deleteExerciseB(final String id) {
+        if(haveNetwork()) {
             Runnable run = new Runnable()
             {
+                String strRespond;
                 @Override
                 public void run()
                 {
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("selectFn", "fnMWorkoutListDateC"));
-                    params.add(new BasicNameValuePair("mId", mId));
-                    params.add(new BasicNameValuePair("uId", uId));
-                    params.add(new BasicNameValuePair("date", date));
-
-                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
-                    jsnObj = null;
-                    cMachine = new ArrayList<>();
-                    cDate = new ArrayList<>();
-                    cTime = new ArrayList<>();
-                    dist = new ArrayList<>();
-                    durr = new ArrayList<>();
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteExerciseB"));
+                    params.add(new BasicNameValuePair("id", id));
 
                     try{
-                        if (jsnArr != null) {
-                            for (int i = 0; i < jsnArr.length(); i++) {
-                                jsnObj = jsnArr.getJSONObject(i);
-                                String data1 = jsnObj.getString("cDate");
-                                String data2 = jsnObj.getString("cTime");
-                                String data3 = jsnObj.getString("distance");
-                                String data4 = jsnObj.getString("duration");
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
 
-
-                                cMachine.add(machine);
-                                cDate.add(data1);
-                                cTime.add(data2);
-                                dist.add(data3);
-                                durr.add(data4);
-                            }
-                        }
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
@@ -475,13 +707,12 @@ public class HistoryTabFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(cDate != null)
-                            {
-                                loadDataC();
+                            if(strRespond.equals("True")) {
+                                loadExerciseData();
+                                Toast.makeText(getActivity(), "Exercise data successfully deleted!", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }
-
                         }
                     });
                 }
@@ -489,22 +720,52 @@ public class HistoryTabFragment extends Fragment {
             Thread thr = new Thread(run);
             thr.start();
         } else if(!haveNetwork()) {
-            loadExerciseData();
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
         }
     }
 
-    public void loadDataC() {
-        cAdapter = new WorkoutTabAdapterC(getActivity(), cMachine, cDate, cTime, dist, durr);
-        listHistory.setAdapter(cAdapter);
-        listHistory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
-            }
-        });
-        progHistory.setVisibility(View.GONE);
-        fragHistory.setVisibility(View.VISIBLE);
+    //Delete exercise data for cardio
+    public void deleteExerciseC(final String id) {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteExerciseC"));
+                    params.add(new BasicNameValuePair("id", id));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                loadExerciseData();
+                                Toast.makeText(getActivity(), "Exercise data successfully deleted!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

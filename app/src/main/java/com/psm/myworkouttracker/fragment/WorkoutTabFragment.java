@@ -62,7 +62,7 @@ public class WorkoutTabFragment extends Fragment {
     private View bodybuilding, cardio;
     private JSONObject jsnObj = new JSONObject();
     private JSONArray jsnArr = new JSONArray();
-    private List<String> dataValues, bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr;
+    private List<String> dataValues, idB, idC, bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr;
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private WebServiceCallArr wsc2 = new WebServiceCallArr();
     private ExercisesAdapter mExercisesAdapter;
@@ -422,6 +422,7 @@ public class WorkoutTabFragment extends Fragment {
                 jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                 jsnObj = null;
                 bMachine = new ArrayList<>();
+                idB = new ArrayList<>();
                 bDate = new ArrayList<>();
                 bTime = new ArrayList<>();
                 sets = new ArrayList<>();
@@ -432,14 +433,15 @@ public class WorkoutTabFragment extends Fragment {
                     if (jsnArr != null) {
                         for (int i = 0; i < jsnArr.length(); i++) {
                             jsnObj = jsnArr.getJSONObject(i);
+                            String data0 = jsnObj.getString("_id");
                             String data1 = jsnObj.getString("bDate");
                             String data2 = jsnObj.getString("bTime");
                             String data3 = jsnObj.getString("sets");
                             String data4 = jsnObj.getString("reps");
                             String data5 = jsnObj.getString("weight");
 
-
                             bMachine.add(machine);
+                            idB.add(data0);
                             bDate.add(data1);
                             bTime.add(data2);
                             sets.add(data3);
@@ -473,13 +475,31 @@ public class WorkoutTabFragment extends Fragment {
     }
 
     public void loadDataB() {
-        bAdapter = new WorkoutTabAdapterB(getActivity(), bMachine, bDate, bTime, sets, reps, weight);
+        bAdapter = new WorkoutTabAdapterB(getActivity(), idB, bMachine, bDate, bTime, sets, reps, weight);
         listWorkout.setAdapter(bAdapter);
         listWorkout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
+                final String itemID = bAdapter.getItemID(position);
+
+                android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(getActivity());
+                alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+                alertDialog.setTitle("Delete Exercise Record");
+                alertDialog.setMessage("Are you sure you want to delete?");
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteExerciseB(itemID);
+                    }
+                });
+
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
             }
         });
         progWorkout.setVisibility(View.GONE);
@@ -499,6 +519,7 @@ public class WorkoutTabFragment extends Fragment {
 
                 jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                 jsnObj = null;
+                idC = new ArrayList<>();
                 cMachine = new ArrayList<>();
                 cDate = new ArrayList<>();
                 cTime = new ArrayList<>();
@@ -509,13 +530,14 @@ public class WorkoutTabFragment extends Fragment {
                     if (jsnArr != null) {
                         for (int i = 0; i < jsnArr.length(); i++) {
                             jsnObj = jsnArr.getJSONObject(i);
+                            String data0 = jsnObj.getString("_id");
                             String data1 = jsnObj.getString("cDate");
                             String data2 = jsnObj.getString("cTime");
                             String data3 = jsnObj.getString("distance");
                             String data4 = jsnObj.getString("duration");
 
-
                             cMachine.add(machine);
+                            idC.add(data0);
                             cDate.add(data1);
                             cTime.add(data2);
                             dist.add(data3);
@@ -548,13 +570,31 @@ public class WorkoutTabFragment extends Fragment {
     }
 
     public void loadDataC() {
-        cAdapter = new WorkoutTabAdapterC(getActivity(), cMachine, cDate, cTime, dist, durr);
+        cAdapter = new WorkoutTabAdapterC(getActivity(), idC, cMachine, cDate, cTime, dist, durr);
         listWorkout.setAdapter(cAdapter);
         listWorkout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemName = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getActivity(),"Test: "+itemName,Toast.LENGTH_LONG).show();
+                final String itemID = cAdapter.getItemID(position);
+
+                android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(getActivity());
+                alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+                alertDialog.setTitle("Delete Exercise Record");
+                alertDialog.setMessage("Are you sure you want to delete?");
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteExerciseC(itemID);
+                    }
+                });
+
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
             }
         });
         progWorkout.setVisibility(View.GONE);
@@ -814,6 +854,100 @@ public class WorkoutTabFragment extends Fragment {
                                 SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
                                 String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
                                 Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //Delete exercise data for body building
+    public void deleteExerciseB(final String id) {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteExerciseB"));
+                    params.add(new BasicNameValuePair("id", id));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                String item = edtMachine.getText().toString();
+                                if(!item.equals("")){
+                                    loadMachine(item);
+                                }
+                                Toast.makeText(getActivity(), "Exercise data successfully deleted!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //Delete exercise data for cardio
+    public void deleteExerciseC(final String id) {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond;
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteExerciseC"));
+                    params.add(new BasicNameValuePair("id", id));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                String item = edtMachine.getText().toString();
+                                if(!item.equals("")){
+                                    loadMachine(item);
+                                }
+                                Toast.makeText(getActivity(), "Exercise data successfully deleted!", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }

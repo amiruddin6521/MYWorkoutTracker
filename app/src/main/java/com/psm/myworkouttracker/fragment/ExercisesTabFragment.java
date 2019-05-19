@@ -232,7 +232,7 @@ public class ExercisesTabFragment extends Fragment {
                 public void run()
                 {
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("selectFn", "fnDeleteExercise"));
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteMachine"));
                     params.add(new BasicNameValuePair("id", id));
 
                     try{

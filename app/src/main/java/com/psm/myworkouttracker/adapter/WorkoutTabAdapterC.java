@@ -15,13 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkoutTabAdapterC extends BaseAdapter implements Filterable {
-    private List<String> originalData, filteredData, cMachine, cDate, cTime, cDist, cDurr;
+    private List<String> originalData, filteredData, idC, cMachine, cDate, cTime, cDist, cDurr;
     private LayoutInflater mInflater;
     private ItemFilter mFilter = new ItemFilter();
 
-    public WorkoutTabAdapterC(Context context, List<String> data1, List<String> data2, List<String> data3, List<String> data4, List<String> data5) {
+    public WorkoutTabAdapterC(Context context, List<String> data0, List<String> data1, List<String> data2, List<String> data3, List<String> data4, List<String> data5) {
         this.filteredData = data1 ;
         this.originalData = data1 ;
+        this.idC = data0 ;
         this.cMachine = data1 ;
         this.cDate = data2 ;
         this.cTime = data3 ;
@@ -40,6 +41,10 @@ public class WorkoutTabAdapterC extends BaseAdapter implements Filterable {
 
     public String getItemName(int position) {
         return filteredData.get(position);
+    }
+
+    public String getItemID(int position) {
+        return idC.get(position);
     }
 
     public long getItemId(int position) {
