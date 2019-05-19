@@ -46,11 +46,12 @@ public class AddExercisesFragment extends Fragment {
     private FloatingActionButton photoButton;
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
+    private View v;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_exercises_add, container, false);
+        v = inflater.inflate(R.layout.fragment_exercises_add, container, false);
 
         btnSaveExe = v.findViewById(R.id.btnSaveExe);
         btnBackExe = v.findViewById(R.id.btnBackExe);
@@ -143,6 +144,7 @@ public class AddExercisesFragment extends Fragment {
     public void resetData() {
         edtNameExe.setText("");
         edtDescExe.setText("");
+        radB = v.findViewById(R.id.radB);
         radB.setChecked(true);
     }
 
