@@ -184,7 +184,9 @@ public class HistoryTabFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, exValues);
         spnExercise.setAdapter(adapter);
         String exercise = spnExercise.getSelectedItem().toString();
-        loadMachine(exercise);
+        if(!exercise.equals("")) {
+            loadMachine(exercise);
+        }
     }
 
     public void loadMachine(final String name) {

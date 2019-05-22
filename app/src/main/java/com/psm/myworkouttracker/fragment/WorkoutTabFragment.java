@@ -5,12 +5,16 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +25,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -28,8 +33,9 @@ import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
 import com.psm.myworkouttracker.activity.MainActivity;
-import com.psm.myworkouttracker.adapter.AutoCompleteAdapter;
+import com.psm.myworkouttracker.adapter.AutoCompleteExercisesAdapter;
 import com.psm.myworkouttracker.adapter.ExercisesAdapter;
+import com.psm.myworkouttracker.adapter.ExercisesItem;
 import com.psm.myworkouttracker.adapter.WorkoutTabAdapterB;
 import com.psm.myworkouttracker.adapter.WorkoutTabAdapterC;
 import com.psm.myworkouttracker.services.WebServiceCallArr;
@@ -62,15 +68,17 @@ public class WorkoutTabFragment extends Fragment {
     private View bodybuilding, cardio;
     private JSONObject jsnObj = new JSONObject();
     private JSONArray jsnArr = new JSONArray();
-    private List<String> dataValues, idB, idC, bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr;
+    private List<String> dataValues, desc, image, idB, idC, bMachine, cMachine, bDate, bTime, cDate, cTime, sets, reps, weight, dist, durr;
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private WebServiceCallArr wsc2 = new WebServiceCallArr();
+    private AutoCompleteExercisesAdapter adapter;
     private ExercisesAdapter mExercisesAdapter;
-    private AutoCompleteAdapter adapter;
     private WorkoutTabAdapterB bAdapter;
     private WorkoutTabAdapterC cAdapter;
     private String uId, mId;
     private View progWorkout, fragWorkout;
+    private ImageView imageMachine;
+    private List<ExercisesItem> exerciseList;
 
     @Nullable
     @Override
@@ -101,6 +109,7 @@ public class WorkoutTabFragment extends Fragment {
         edtMachine = v.findViewById(R.id.edtMachine);
         progWorkout = v.findViewById(R.id.progWorkout);
         fragWorkout = v.findViewById(R.id.fragWorkout);
+        imageMachine = v.findViewById(R.id.imageMachine);
 
         edtMachine.setOnFocusChangeListener(touchRazEdit);
         dateUpd.setOnFocusChangeListener(touchRazEdit);
@@ -113,10 +122,33 @@ public class WorkoutTabFragment extends Fragment {
         MainActivity activity = (MainActivity) getActivity();
         uId = activity.getMyData();
 
+        btnListMachine.setEnabled(false);
+
         loadListData();
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         dateUpd.setText(date);
+
+        imageMachine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String exerciseName = edtMachine.getText().toString();
+                if(!exerciseName.equals("")) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("exercise", exerciseName);
+
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    UpdateExercisesFragment fragment = new UpdateExercisesFragment();
+                    fragment.setArguments(bundle);
+                    fragmentManager.beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container,fragment)
+                            .commit();
+                } else {
+                    Toast.makeText(getActivity(),"Please choose your exercise first!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -394,7 +426,7 @@ public class WorkoutTabFragment extends Fragment {
     public void showAlert() {
         AlertDialog.Builder myBuilder = new AlertDialog.Builder(getActivity());
         myBuilder.setTitle("Select an existing exercises: ");
-        mExercisesAdapter = new ExercisesAdapter(getActivity(), dataValues);
+        mExercisesAdapter = new ExercisesAdapter(getActivity(), dataValues,desc,image);
         myBuilder.setAdapter(mExercisesAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int position) {
@@ -615,13 +647,16 @@ public class WorkoutTabFragment extends Fragment {
                     jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                     jsnObj = null;
                     dataValues = new ArrayList<>();
+                    desc = new ArrayList<>();
 
                     try{
                         if (jsnArr != null) {
                             for (int i = 0; i < jsnArr.length(); i++) {
                                 jsnObj = jsnArr.getJSONObject(i);
                                 String data = jsnObj.getString("name");
+                                String data1 = jsnObj.getString("description");
                                 dataValues.add(data);
+                                desc.add(data1);
                             }
                         }
                     } catch (JSONException e){
@@ -635,17 +670,7 @@ public class WorkoutTabFragment extends Fragment {
                         @Override
                         public void run() {
                             if(dataValues != null) {
-                                adapter = new AutoCompleteAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line, android.R.id.text1, dataValues);
-                                edtMachine.setAdapter(adapter);
-                                edtMachine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                        String itemName = parent.getItemAtPosition(position).toString();
-                                        loadMachine(itemName);
-                                        hideKeyboard(edtMachine);
-                                        edtMachine.clearFocus();
-                                    }
-                                });
+                                loadListPictureData();
                             }
                         }
                     });
@@ -658,13 +683,79 @@ public class WorkoutTabFragment extends Fragment {
         }
     }
 
+    public void loadListPictureData() {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnMachineListPicture"));
+                    params.add(new BasicNameValuePair("id", uId));
+
+                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                    jsnObj = null;
+                    image = new ArrayList<>();
+
+                    try{
+                        if (jsnArr != null) {
+                            for (int i = 0; i < jsnArr.length(); i++) {
+                                //jsnObj = jsnArr.getJSONObject(i);
+
+                                String data = jsnArr.get(i).toString();
+                                image.add(data);
+
+                            }
+                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnListMachine.setEnabled(true);
+                            fillExerciseList();
+                            adapter = new AutoCompleteExercisesAdapter(getActivity(), exerciseList);
+                            edtMachine.setAdapter(adapter);
+                            edtMachine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    String exerciseName = adapter.getItemName(position);
+                                    loadMachine(exerciseName);
+                                    hideKeyboard(edtMachine);
+                                    edtMachine.clearFocus();
+                                }
+                            });
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void fillExerciseList() {
+        exerciseList = new ArrayList<>();
+        for(int i = 0; i < dataValues.size(); i++) {
+            exerciseList.add(new ExercisesItem(dataValues.get(i), desc.get(i), image.get(i)));
+        }
+    }
+
     public void loadMachine(final String name) {
         progWorkout.setVisibility(View.VISIBLE);
         fragWorkout.setVisibility(View.GONE);
         if(haveNetwork()) {
             Runnable run = new Runnable()
             {
-                String strRespond, type;
+                String strRespond, type, img64;
                 @Override
                 public void run()
                 {
@@ -677,6 +768,7 @@ public class WorkoutTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         type = jsnObj.getString("type");
                         mId = jsnObj.getString("id");
+                        img64 = jsnObj.getString("encoded");
                         strRespond = jsnObj.getString("respond");
 
                     } catch (JSONException e){
@@ -689,8 +781,14 @@ public class WorkoutTabFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(strRespond.equals("True")) {
+                            if(strRespond.equals("True") && img64.equals("")) {
                                 setUIData(name, type);
+                                imageMachine.setImageResource(R.drawable.person);
+                            } else if(strRespond.equals("True")) {
+                                setUIData(name, type);
+                                byte[] data = Base64.decode(img64, Base64.DEFAULT);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                imageMachine.setImageBitmap(decodedByte);
                             } else {
                                 Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }
@@ -722,8 +820,8 @@ public class WorkoutTabFragment extends Fragment {
             bodybuilding.setVisibility(View.VISIBLE);
             edtMachine.setText(name);
             txtType.setText(type);
-            edtDist.setText("5.0");
-            edtDurr.setText("00:10");
+            edtDist.setText("1.0");
+            edtDurr.setText("00:30");
             hideKeyboard(edtMachine);
             edtMachine.clearFocus();
             loadWorkoutDataB(name);
@@ -738,9 +836,10 @@ public class WorkoutTabFragment extends Fragment {
         edtSets.setText("1");
         edtReps.setText("1");
         edtWeight.setText("5.0");
-        edtDist.setText("5.0");
-        edtDurr.setText("00:10");
+        edtDist.setText("1.0");
+        edtDurr.setText("00:30");
         txtType.setText("-");
+        imageMachine.setImageResource(R.drawable.person);
         mId = "";
         listWorkout.setAdapter(null);
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());

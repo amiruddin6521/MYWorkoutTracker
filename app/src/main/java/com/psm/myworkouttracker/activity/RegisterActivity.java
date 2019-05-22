@@ -254,7 +254,7 @@ public class RegisterActivity extends AppCompatActivity {
     //Dialog box with the three options
     private void selectImage() {
         final CharSequence[] items = { "Take new picture", "Choose from library",
-                "Cancel"};
+                "Remove current picture", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this);
         builder.setTitle("Add Picture!");
         builder.setIcon(R.drawable.ic_menu_camera);
@@ -266,6 +266,11 @@ public class RegisterActivity extends AppCompatActivity {
                     dispatchTakePictureIntent();
                 } else if (items[item].equals("Choose from library")) {
                     galleryIntent();
+                } else if (items[item].equals("Remove current picture")) {
+                    encoded_string = "";
+                    image_name = "";
+                    roundProfile.setImageResource(R.drawable.person);
+                    dialog.dismiss();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
                 }

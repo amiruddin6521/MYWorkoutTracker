@@ -1,12 +1,16 @@
 package com.psm.myworkouttracker.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.psm.myworkouttracker.R;
 
@@ -16,12 +20,16 @@ import java.util.List;
 public class ExercisesAdapter extends BaseAdapter implements Filterable {
     private List<String> originalData;
     private List<String> filteredData;
+    private List<String> descData;
+    private List<String> pictureData;
     private LayoutInflater mInflater;
     private ItemFilter mFilter = new ItemFilter();
 
-    public ExercisesAdapter(Context context, List<String> data) {
+    public ExercisesAdapter(Context context, List<String> data, List<String> data1, List<String> data2) {
         this.filteredData = data ;
         this.originalData = data ;
+        this.descData = data1 ;
+        this.pictureData = data2 ;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -56,6 +64,8 @@ public class ExercisesAdapter extends BaseAdapter implements Filterable {
             // we want to bind data to.
             holder = new ViewHolder();
             holder.txtExercisesName = (TextView) convertView.findViewById(R.id.txtExercise);
+            holder.txtDesc = (TextView) convertView.findViewById(R.id.txtDescription);
+            holder.imgData = (ImageView) convertView.findViewById(R.id.imageMachine);
 
             // Bind the data efficiently with the holder.
 
@@ -68,12 +78,21 @@ public class ExercisesAdapter extends BaseAdapter implements Filterable {
 
         // If weren't re-ordering this you could rely on what you set last time
         holder.txtExercisesName.setText(filteredData.get(position));
-
+        holder.txtDesc.setText(descData.get(position));
+        if(!pictureData.get(position).equals("")) {
+            byte[] data = Base64.decode(pictureData.get(position), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
+            holder.imgData.setImageBitmap(decodedByte);
+        } else {
+            holder.imgData.setImageResource(R.drawable.person);
+        }
         return convertView;
     }
 
     static class ViewHolder {
         TextView txtExercisesName;
+        TextView txtDesc;
+        ImageView imgData;
     }
 
     public Filter getFilter() {

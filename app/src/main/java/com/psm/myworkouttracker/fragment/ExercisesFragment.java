@@ -22,7 +22,8 @@ import android.widget.Toast;
 
 import com.psm.myworkouttracker.R;
 import com.psm.myworkouttracker.activity.MainActivity;
-import com.psm.myworkouttracker.adapter.ExercisesAdapter;
+import com.psm.myworkouttracker.adapter.AutoCompleteExercisesAdapter;
+import com.psm.myworkouttracker.adapter.ExercisesItem;
 import com.psm.myworkouttracker.services.WebServiceCallArr;
 
 import org.apache.http.NameValuePair;
@@ -44,9 +45,10 @@ public class ExercisesFragment extends Fragment {
     private JSONObject jsnObj = new JSONObject();
     private WebServiceCallArr wsc2 = new WebServiceCallArr();
     private JSONArray jsnArr = new JSONArray();
-    private List<String> values;
+    private List<String> values, desc, image;
     private View progExercises, fragExercises;
-    private ExercisesAdapter mExercisesAdapter;
+    private AutoCompleteExercisesAdapter adapter;
+    private List<ExercisesItem> exerciseList;
     private String id;
 
     @Nullable
@@ -114,6 +116,7 @@ public class ExercisesFragment extends Fragment {
                     jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
                     jsnObj = null;
                     values = new ArrayList<>();
+                    desc = new ArrayList<>();
 
                     try{
                         if (jsnArr != null) {
@@ -121,7 +124,9 @@ public class ExercisesFragment extends Fragment {
                                 jsnObj = jsnArr.getJSONObject(i);
 
                                 String data = jsnObj.getString("name");
+                                String data1 = jsnObj.getString("description");
                                 values.add(data);
+                                desc.add(data1);
                             }
                         }
                     } catch (JSONException e){
@@ -136,7 +141,7 @@ public class ExercisesFragment extends Fragment {
                         public void run() {
                             if(values != null)
                             {
-                                loadList();
+                                loadListPictureData();
                             }
                         }
                     });
@@ -149,16 +154,74 @@ public class ExercisesFragment extends Fragment {
         }
     }
 
+    public void loadListPictureData() {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnMachineListPicture"));
+                    params.add(new BasicNameValuePair("id", id));
+
+                    jsnArr = wsc2.makeHttpRequest(wsc2.fnGetURL(), "POST", params);
+                    jsnObj = null;
+                    image = new ArrayList<>();
+
+                    try{
+                        if (jsnArr != null) {
+                            for (int i = 0; i < jsnArr.length(); i++) {
+                                //jsnObj = jsnArr.getJSONObject(i);
+
+                                String data = jsnArr.get(i).toString();
+                                image.add(data);
+
+                            }
+                        }
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(image != null)
+                            {
+                                fillExerciseList();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void fillExerciseList() {
+        exerciseList = new ArrayList<>();
+        for(int i = 0; i < values.size(); i++) {
+            exerciseList.add(new ExercisesItem(values.get(i), desc.get(i), image.get(i)));
+        }
+        loadList();
+    }
+
     public void loadList() {
         progExercises.setVisibility(View.GONE);
         fragExercises.setVisibility(View.VISIBLE);
 
-        mExercisesAdapter = new ExercisesAdapter(getActivity(), values);
-        listExercises.setAdapter(mExercisesAdapter);
+        adapter = new AutoCompleteExercisesAdapter(getActivity(), exerciseList);
+        listExercises.setAdapter(adapter);
         listExercises.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String exerciseName = parent.getItemAtPosition(position).toString();
+                String exerciseName = adapter.getItemName(position);
 
                 Bundle bundle = new Bundle();
                 bundle.putString("exercise", exerciseName);
@@ -177,7 +240,7 @@ public class ExercisesFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mExercisesAdapter.getFilter().filter(s.toString());
+                adapter.getFilter().filter(s.toString());
             }
 
             @Override

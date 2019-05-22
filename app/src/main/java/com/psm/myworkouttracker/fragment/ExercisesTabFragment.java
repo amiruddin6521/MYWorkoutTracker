@@ -1,16 +1,21 @@
 package com.psm.myworkouttracker.fragment;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -18,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -29,20 +35,26 @@ import com.psm.myworkouttracker.activity.LoginActivity;
 import com.psm.myworkouttracker.activity.MainActivity;
 import com.psm.myworkouttracker.activity.ProfileActivity;
 import com.psm.myworkouttracker.services.WebServiceCallObj;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
 public class ExercisesTabFragment extends Fragment {
 
-    private String uId, exerciseName, mId;
+    private String uId, exerciseName, mId, currentPhotoPath, encoded_string, image_name, type;
     private EditText edtNameExe, edtDescExe;
     private TextView edtTypeExe;
     private CircularImageView roundProfile;
@@ -51,6 +63,7 @@ public class ExercisesTabFragment extends Fragment {
     private JSONObject jsnObj = new JSONObject();
     private View progExercises, fragExercises;
     private Button btnUpdateExe, btnDeleteExe, btnBackExe;
+    private Boolean status;
 
     @Nullable
     @Override
@@ -79,7 +92,7 @@ public class ExercisesTabFragment extends Fragment {
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //selectImage();
+                selectImage();
             }
         });
 
@@ -117,7 +130,7 @@ public class ExercisesTabFragment extends Fragment {
                 alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteExercise(mId);
+                        deleteExercise();
                     }
                 });
 
@@ -162,12 +175,131 @@ public class ExercisesTabFragment extends Fragment {
         return haveMobileData || haveWiFi;
     }
 
+    //Dialog box with the three options
+    private void selectImage() {
+        final CharSequence[] items = { "Take new picture", "Choose from library",
+                "Delete current picture", "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Update Picture!");
+        builder.setIcon(R.drawable.ic_menu_camera);
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take new picture")) {
+                    dispatchTakePictureIntent();
+                } else if (items[item].equals("Choose from library")) {
+                    galleryIntent();
+                } else if (items[item].equals("Delete current picture")) {
+                    encoded_string = "";
+                    image_name = "";
+                    status = false;
+                    roundProfile.setImageResource(R.drawable.person);
+                    dialog.dismiss();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    //Create image file name and file path
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    //Take picture and transfer picture data into intent
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                        "com.psm.myworkouttracker.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, 1);
+            }
+        }
+    }
+
+    //Calling an implicit intent to open the gallery
+    private void galleryIntent()
+    {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_PICK);//ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(intent, "Select File"),2);
+    }
+
+    //Handle the result we have received by calling startActivityForResult()
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap bitmap = null;
+        ByteArrayOutputStream bytes = null;
+        File fileName = null;
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == Activity.RESULT_OK) {
+                Uri resultUri = result.getUri();
+                roundProfile.setImageURI(resultUri);
+                status = true;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), resultUri);
+                    bytes = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
+                    fileName = new File(Environment.getExternalStorageDirectory(),
+                            System.currentTimeMillis() + ".jpg");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                byte[] array = bytes.toByteArray();
+                encoded_string = Base64.encodeToString(array, 0);
+                image_name = fileName.getName();
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        } else if (requestCode == 2) {
+            if (data != null) {
+                Uri selectedImageUri = data.getData();
+                CropImage.activity(selectedImageUri).start(getContext(), this);
+            }
+        } else if (requestCode == 1) {
+            if (currentPhotoPath != null) {
+                File file = new File(currentPhotoPath);
+                Uri selectedImageUri = Uri.fromFile(file);
+                CropImage.activity(selectedImageUri).start(getContext(), this);
+            }
+        }
+    }
+
     //Load data for machine
     public void loadExercise(final String id, final String name) {
         if(haveNetwork()) {
             Runnable run = new Runnable()
             {
-                String strRespond, type, description, img64;
+                String strRespond, description, img64;
                 @Override
                 public void run()
                 {
@@ -201,6 +333,7 @@ public class ExercisesTabFragment extends Fragment {
                                 edtDescExe.setText(description);
                                 edtTypeExe.setText(type);
                                 roundProfile.setImageResource(R.drawable.person);
+                                status = false;
                             } else if(strRespond.equals("True")){
                                 edtNameExe.setText(exerciseName);
                                 edtDescExe.setText(description);
@@ -208,6 +341,7 @@ public class ExercisesTabFragment extends Fragment {
                                 byte[] data = Base64.decode(img64, Base64.DEFAULT);
                                 Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
                                 roundProfile.setImageBitmap(decodedByte);
+                                status = true;
                             } else {
                                 Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }
@@ -223,7 +357,7 @@ public class ExercisesTabFragment extends Fragment {
     }
 
     //Delete data for machine
-    public void deleteExercise(final String id) {
+    public void deleteExercise() {
         if(haveNetwork()) {
             Runnable run = new Runnable()
             {
@@ -233,7 +367,8 @@ public class ExercisesTabFragment extends Fragment {
                 {
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
                     params.add(new BasicNameValuePair("selectFn", "fnDeleteMachine"));
-                    params.add(new BasicNameValuePair("id", id));
+                    params.add(new BasicNameValuePair("id", mId));
+                    params.add(new BasicNameValuePair("type", type));
 
                     try{
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
@@ -284,6 +419,9 @@ public class ExercisesTabFragment extends Fragment {
                     params.add(new BasicNameValuePair("varName", name));
                     params.add(new BasicNameValuePair("varDesc", description));
                     params.add(new BasicNameValuePair("varId", mId));
+                    params.add(new BasicNameValuePair("varStatus", status.toString()));
+                    params.add(new BasicNameValuePair("encoded_string", encoded_string));
+                    params.add(new BasicNameValuePair("image_name", image_name));
 
                     try{
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);

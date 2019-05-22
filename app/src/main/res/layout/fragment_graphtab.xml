@@ -2,14 +2,136 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     android:background="@drawable/ic_background">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Graph Tab"
-        android:textSize="30dp"
-        android:layout_marginTop="280dp"
-        android:textAlignment="center"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/cardborder">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Exercise:"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Display:"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/spnExercise"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp"
+                        android:layout_marginBottom="5dp">
+
+                    </android.support.v7.widget.AppCompatSpinner>
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/spnDisplay"
+                        android:layout_width="match_parent"
+                        android:layout_height="22dp">
+
+                    </android.support.v7.widget.AppCompatSpinner>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnAll"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:background="@drawable/ic_background_button"
+                android:text="All"/>
+
+            <Button
+                android:id="@+id/btnLastYear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/ic_background_button"
+                android:text="Last Year"/>
+
+            <Button
+                android:id="@+id/btnLastMonth"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/ic_background_button"
+                android:text="Last Month"/>
+
+            <Button
+                android:id="@+id/btnLastWeek"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/ic_background_button"
+                android:text="Last Week"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chartExercise"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/cardborder">
+
+            </com.github.mikephil.charting.charts.LineChart>
+        </LinearLayout>
+
+    </LinearLayout>
+
 
 </LinearLayout>
