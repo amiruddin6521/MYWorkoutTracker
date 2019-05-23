@@ -44,7 +44,6 @@ import com.psm.myworkouttracker.services.WebServiceCallObj;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -83,7 +82,7 @@ public class WorkoutTabFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_workouttab, container, false);
+        View v = inflater.inflate(R.layout.fragment_workout_tab, container, false);
 
         bodybuilding = v.findViewById(R.id.bodybuilding);
         cardio = v.findViewById(R.id.cardio);
@@ -481,7 +480,7 @@ public class WorkoutTabFragment extends Fragment {
                             weight.add(data5);
                         }
                     }
-                } catch (JSONException e){
+                } catch (Exception e){
                     e.printStackTrace();
                 }
 
@@ -576,7 +575,7 @@ public class WorkoutTabFragment extends Fragment {
                             durr.add(data4);
                         }
                     }
-                } catch (JSONException e){
+                } catch (Exception e){
                     e.printStackTrace();
                 }
 
@@ -659,7 +658,7 @@ public class WorkoutTabFragment extends Fragment {
                                 desc.add(data1);
                             }
                         }
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -708,7 +707,7 @@ public class WorkoutTabFragment extends Fragment {
 
                             }
                         }
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -771,7 +770,7 @@ public class WorkoutTabFragment extends Fragment {
                         img64 = jsnObj.getString("encoded");
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -877,7 +876,7 @@ public class WorkoutTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -936,7 +935,7 @@ public class WorkoutTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -984,7 +983,7 @@ public class WorkoutTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -1031,7 +1030,7 @@ public class WorkoutTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

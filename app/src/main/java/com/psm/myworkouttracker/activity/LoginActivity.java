@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
                         id = jsnObj.getString("id");
                         name = jsnObj.getString("name");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

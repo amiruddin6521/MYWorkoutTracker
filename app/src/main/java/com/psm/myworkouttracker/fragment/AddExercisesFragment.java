@@ -313,7 +313,7 @@ public class AddExercisesFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

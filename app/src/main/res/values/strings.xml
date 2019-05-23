@@ -24,6 +24,10 @@
         completions."
     </string>
     <string name="time"><u>00:10</u></string>
+    <string name="date"><u>Date</u></string>
+    <string name="measure"><u>Measure (CM)</u></string>
+    <string name="weight"><u>Weight (KG)</u></string>
+    <string name="status">BMI = weight(kg) / height(m)<sup><small>2</small></sup></string>
     <string name="interneterror">No internet connection detected! Please turn on your Mobile Data/WiFi first!</string>
-    <string name="register">Don\'t have account? <u>Register here</u></string>
+    <string name="register">Don\'t Have Account? <u>Register Here</u></string>
 </resources>

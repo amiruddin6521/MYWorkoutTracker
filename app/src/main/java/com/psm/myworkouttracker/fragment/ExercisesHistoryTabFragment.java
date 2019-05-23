@@ -130,7 +130,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                         mId = jsnObj.getString("id");
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -181,7 +181,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                                     dtValues.add(data);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -224,7 +224,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                                     dtValues.add(data);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -311,7 +311,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                                     weight.add(data5);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -376,7 +376,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                                     weight.add(data5);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -477,7 +477,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                                     durr.add(data4);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -539,7 +539,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                                     durr.add(data4);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -617,7 +617,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -661,7 +661,7 @@ public class ExercisesHistoryTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

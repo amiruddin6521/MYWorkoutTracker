@@ -471,7 +471,7 @@ public class RegisterActivity extends AppCompatActivity {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -529,7 +529,7 @@ public class RegisterActivity extends AppCompatActivity {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

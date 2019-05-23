@@ -129,7 +129,7 @@ public class ExercisesFragment extends Fragment {
                                 desc.add(data1);
                             }
                         }
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -179,7 +179,7 @@ public class ExercisesFragment extends Fragment {
 
                             }
                         }
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

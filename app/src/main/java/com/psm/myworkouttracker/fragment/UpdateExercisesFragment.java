@@ -22,7 +22,7 @@ public class UpdateExercisesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_updateexercises, container, false);
+        View v = inflater.inflate(R.layout.fragment_update_exercises, container, false);
 
         Bundle bundle = getArguments();
         exerciseName = bundle.getString("exercise");
@@ -58,9 +58,5 @@ public class UpdateExercisesFragment extends Fragment {
         });
 
         return v;
-    }
-
-    public String getExerciseName() {
-        return exerciseName;
     }
 }

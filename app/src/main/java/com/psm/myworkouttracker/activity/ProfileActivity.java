@@ -39,7 +39,6 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -156,7 +155,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog = new Dialog(ProfileActivity.this);
                 dialog.setCancelable(true);
-                dialog.setContentView(R.layout.dialog_weightheight);
+                dialog.setContentView(R.layout.dialog_weight_height);
                 edtUpdate = dialog.findViewById(R.id.edtUpdate);
                 btnSave = dialog.findViewById(R.id.btnSave);
                 edtUpdate.setText(txtWeight.getText().toString());
@@ -194,7 +193,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog = new Dialog(ProfileActivity.this);
                 dialog.setCancelable(true);
-                dialog.setContentView(R.layout.dialog_weightheight);
+                dialog.setContentView(R.layout.dialog_weight_height);
                 edtUpdate = dialog.findViewById(R.id.edtUpdate);
                 btnSave = dialog.findViewById(R.id.btnSave);
                 edtUpdate.setText(txtHeight.getText().toString());
@@ -637,7 +636,7 @@ public class ProfileActivity extends AppCompatActivity {
                     jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                     strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
+                } catch (Exception e){
                     e.printStackTrace();
                 }
 
@@ -676,7 +675,7 @@ public class ProfileActivity extends AppCompatActivity {
                     jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                     strRespond = jsnObj.getString("respond");
 
-                } catch (JSONException e){
+                } catch (Exception e){
                     e.printStackTrace();
                 }
 
@@ -724,7 +723,7 @@ public class ProfileActivity extends AppCompatActivity {
                         img64 = jsnObj.getString("encoded");
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -788,7 +787,7 @@ public class ProfileActivity extends AppCompatActivity {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -830,7 +829,7 @@ public class ProfileActivity extends AppCompatActivity {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -872,7 +871,7 @@ public class ProfileActivity extends AppCompatActivity {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -914,7 +913,7 @@ public class ProfileActivity extends AppCompatActivity {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

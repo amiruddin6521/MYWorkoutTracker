@@ -27,7 +27,6 @@ import com.psm.myworkouttracker.services.WebServiceCallObj;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class HistoryTabFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_historytab, container, false);
+        View v = inflater.inflate(R.layout.fragment_history_tab, container, false);
 
         MainActivity activity = (MainActivity) getActivity();
         uId = activity.getMyData();
@@ -155,7 +154,7 @@ public class HistoryTabFragment extends Fragment {
                                 exValues.add(data);
                             }
                         }
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -208,7 +207,7 @@ public class HistoryTabFragment extends Fragment {
                         mId = jsnObj.getString("id");
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -260,7 +259,7 @@ public class HistoryTabFragment extends Fragment {
                                     dtValues.add(data);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -304,7 +303,7 @@ public class HistoryTabFragment extends Fragment {
                                     dtValues.add(data);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -392,7 +391,7 @@ public class HistoryTabFragment extends Fragment {
                                     weight.add(data5);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -457,7 +456,7 @@ public class HistoryTabFragment extends Fragment {
                                     weight.add(data5);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -558,7 +557,7 @@ public class HistoryTabFragment extends Fragment {
                                     durr.add(data4);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -621,7 +620,7 @@ public class HistoryTabFragment extends Fragment {
                                     durr.add(data4);
                                 }
                             }
-                        } catch (JSONException e){
+                        } catch (Exception e){
                             e.printStackTrace();
                         }
 
@@ -699,7 +698,7 @@ public class HistoryTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
@@ -743,7 +742,7 @@ public class HistoryTabFragment extends Fragment {
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 

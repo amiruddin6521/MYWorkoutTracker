@@ -28,14 +28,12 @@ import com.psm.myworkouttracker.R;
 import com.psm.myworkouttracker.fragment.AboutFragment;
 import com.psm.myworkouttracker.fragment.BodyTrackFragment;
 import com.psm.myworkouttracker.fragment.ExercisesFragment;
-import com.psm.myworkouttracker.fragment.SettingFragment;
 import com.psm.myworkouttracker.fragment.WeightTrackFragment;
 import com.psm.myworkouttracker.fragment.WorkoutFragment;
 import com.psm.myworkouttracker.services.WebServiceCallObj;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -256,7 +254,7 @@ public class MainActivity extends AppCompatActivity
                         img64 = jsnObj.getString("encoded");
                         strRespond = jsnObj.getString("respond");
 
-                    } catch (JSONException e){
+                    } catch (Exception e){
                         e.printStackTrace();
                     }
 
