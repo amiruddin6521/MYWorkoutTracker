@@ -42,6 +42,7 @@
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#ffffff"
         android:textAllCaps="false"
         android:background="@drawable/ic_background_sbutton"
         android:layout_marginBottom="20dp"

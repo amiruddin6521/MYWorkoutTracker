@@ -50,8 +50,8 @@
                         android:layout_height="200dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/person"
-                        app:civ_border_color="#2E3192"
-                        app:civ_border_width="3dp"/>
+                        app:civ_border_color="@color/colorAccent"
+                        app:civ_border_width="2dp"/>
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/actionCamera"
@@ -60,7 +60,7 @@
                         android:layout_marginTop="180dp"
                         android:layout_marginLeft="-30dp"
                         android:clickable="true"
-                        android:src="@android:drawable/ic_menu_camera"/>
+                        android:src="@drawable/ic_camera_alt_white_24dp"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -261,6 +261,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="16dp"
+                android:textColor="#ffffff"
+                android:textAllCaps="false"
                 android:background="@drawable/ic_background_button"
                 android:text="@string/action_register"
                 android:textStyle="bold" />

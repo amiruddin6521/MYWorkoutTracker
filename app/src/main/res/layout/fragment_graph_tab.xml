@@ -56,11 +56,11 @@
                     </android.support.v7.widget.AppCompatSpinner>
 
                     <android.support.v7.widget.AppCompatSpinner
-                        android:id="@+id/spnDisplay"
-                        android:layout_width="match_parent"
-                        android:layout_height="22dp">
+                    android:id="@+id/spnDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="22dp">
 
-                    </android.support.v7.widget.AppCompatSpinner>
+                </android.support.v7.widget.AppCompatSpinner>
 
                 </LinearLayout>
 
@@ -70,7 +70,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/btnAll"
@@ -79,6 +80,7 @@
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textAllCaps="false"
                 android:textColor="#ffffff"
                 android:background="@drawable/ic_background_button"
                 android:text="All"/>
@@ -90,6 +92,7 @@
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textAllCaps="false"
                 android:textColor="#ffffff"
                 android:layout_marginStart="5dp"
                 android:background="@drawable/ic_background_button"
@@ -102,6 +105,7 @@
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textAllCaps="false"
                 android:textColor="#ffffff"
                 android:layout_marginStart="5dp"
                 android:background="@drawable/ic_background_button"
@@ -114,6 +118,7 @@
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:textSize="12sp"
+                android:textAllCaps="false"
                 android:textColor="#ffffff"
                 android:layout_marginStart="5dp"
                 android:background="@drawable/ic_background_button"
@@ -121,16 +126,37 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <ProgressBar
+            android:id="@+id/progGraph"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/txtNoHistory"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:text="No graph yet"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/fragGraph"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/cardborder"
+            android:visibility="gone">
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/chartExercise"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/cardborder">
+                android:layout_marginEnd="5dp">
 
             </com.github.mikephil.charting.charts.LineChart>
         </LinearLayout>

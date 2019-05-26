@@ -14,150 +14,142 @@
         android:layout_margin="10dp"
         android:visibility="visible" />
 
-    <ScrollView
+    <LinearLayout
         android:id="@+id/exetab_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal"
+            android:background="@drawable/cardborder"
             android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center_horizontal"
-                android:background="@drawable/cardborder"
-                android:orientation="vertical">
 
-                <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/imgPhoto1"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_machine"
+                    android:layout_marginLeft="20dp"
+                    app:civ_border_color="@color/colorAccent"
+                    app:civ_border_width="2dp"/>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/actionCamera1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <com.mikhaellopez.circularimageview.CircularImageView
-                        android:id="@+id/imgPhoto1"
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/person"
-                        android:layout_marginLeft="20dp"
-                        app:civ_border_color="#2E3192"
-                        app:civ_border_width="3dp"/>
-
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/actionCamera1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="180dp"
-                        android:layout_marginLeft="-30dp"
-                        android:clickable="true"
-                        android:src="@android:drawable/ic_menu_camera"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="Name: "/>
-
-                <EditText
-                    android:id="@+id/edtNameExe"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:selectAllOnFocus="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:singleLine="true" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="Description: "/>
-
-                <EditText
-                    android:id="@+id/edtDescExe"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:selectAllOnFocus="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:singleLine="true" />
-
-                <LinearLayout
-                    android:id="@+id/exeType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:text="Exercise type: "/>
-
-                    <TextView
-                        android:id="@+id/edtTypeExe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="13dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:textSize="18dp"
-                        android:textStyle="bold"/>
-
-                </LinearLayout>
+                    android:layout_marginTop="180dp"
+                    android:layout_marginLeft="-30dp"
+                    android:clickable="true"
+                    android:src="@drawable/ic_camera_alt_white_24dp"/>
 
             </LinearLayout>
 
-            <LinearLayout
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Name: "/>
+
+            <EditText
+                android:id="@+id/edtNameExe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:selectAllOnFocus="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:orientation="horizontal">
+                android:text="Description: "/>
 
-                <Button
-                    android:id="@+id/btnUpdateExe"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_background_button"
-                    android:text="Update" />
+            <EditText
+                android:id="@+id/edtDescExe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:selectAllOnFocus="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:singleLine="true" />
 
-                <Button
-                    android:id="@+id/btnDeleteExe"
-                    android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/exeType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_background_button"
-                    android:text="Delete" />
+                    android:layout_marginEnd="10dp"
+                    android:text="Exercise type: "/>
+
+                <TextView
+                    android:id="@+id/edtTypeExe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="13dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="18dp"
+                    android:textStyle="bold"/>
+
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnBackExe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:background="@drawable/ic_background_button"
-                android:text="Back" />
         </LinearLayout>
 
-    </ScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnUpdateExe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:background="@drawable/ic_background_button"
+                android:text="Update" />
+
+            <Button
+                android:id="@+id/btnDeleteExe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:background="@drawable/ic_background_button"
+                android:text="Delete" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

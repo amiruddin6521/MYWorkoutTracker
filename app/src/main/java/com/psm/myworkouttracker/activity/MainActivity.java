@@ -41,7 +41,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String id = "1"; //1
+    private String id; //1
     private ImageView imageView1;
     private TextView txtName, txtEmail;
     private WebServiceCallObj wsc = new WebServiceCallObj();
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         // Get the id from login activity. //2
-        /*Intent intent = getIntent();
-        id = intent.getStringExtra("id");*/
+        Intent intent = getIntent();
+        id = intent.getStringExtra("id");
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -192,7 +192,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            exitDialog();
             return true;
         }
 
@@ -215,10 +216,11 @@ public class MainActivity extends AppCompatActivity
             frag = new WeightTrackFragment();
         } else if (id == R.id.nav_bodytrack) {
             frag = new BodyTrackFragment();
+        } else if (id == R.id.nav_settings) {
+            Toast.makeText(MainActivity.this,"Will be added soon.",Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_about) {
-            frag = new AboutFragment();
-        } else if (id == R.id.nav_logout) {
-            exitDialog();
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
         }
 
         if(frag != null) {

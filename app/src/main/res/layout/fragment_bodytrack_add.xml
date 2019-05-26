@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="Weight (KG):"/>
+                        android:text="Measure (CM):"/>
 
                 </LinearLayout>
 
@@ -70,7 +70,7 @@
                         android:id="@+id/currMeasure"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter weight here"
+                        android:hint="Enter measure here"
                         android:textSize="14dp"
                         android:inputType="numberDecimal"/>
 
@@ -143,7 +143,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="110dp"
                     android:textStyle="bold|italic"
-                    android:text="@string/weight"/>
+                    android:text="@string/measure"/>
 
             </LinearLayout>
 
@@ -154,57 +154,6 @@
 
             </ListView>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:orientation="horizontal"
-            android:background="@drawable/cardborder">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="BMI: "
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/txtBMIValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:textColor="@android:color/holo_blue_light"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/txtBMIStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:textSize="20sp"
-                android:textStyle="bold|italic"/>
-
-            <ListView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-            </ListView>
-
-            <ImageButton
-                android:id="@+id/btnInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="10dp"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_help_outline_black_24dp" />
         </LinearLayout>
 
     </LinearLayout>

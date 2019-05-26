@@ -51,7 +51,7 @@ public class AddExercisesFragment extends Fragment {
 
     private RadioButton radB;
     private RadioGroup radGrpExe;
-    private Button btnSaveExe, btnBackExe, btnResetExe;
+    private Button btnSaveExe, btnResetExe;
     private String uId, currentPhotoPath, encoded_string, image_name;
     private EditText edtNameExe, edtDescExe;
     private CircularImageView roundProfile;
@@ -66,7 +66,6 @@ public class AddExercisesFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_exercises_add, container, false);
 
         btnSaveExe = v.findViewById(R.id.btnSaveExe);
-        btnBackExe = v.findViewById(R.id.btnBackExe);
         btnResetExe = v.findViewById(R.id.btnResetExe);
         radGrpExe = v.findViewById(R.id.radGrpExe);
         roundProfile =  v.findViewById(R.id.imgPhoto2);
@@ -109,13 +108,6 @@ public class AddExercisesFragment extends Fragment {
                     }
                 });
                 alertDialog.show();
-            }
-        });
-
-        btnBackExe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
 
@@ -167,7 +159,7 @@ public class AddExercisesFragment extends Fragment {
                 } else if (items[item].equals("Remove current picture")) {
                     encoded_string = "";
                     image_name = "";
-                    roundProfile.setImageResource(R.drawable.person);
+                    roundProfile.setImageResource(R.drawable.ic_machine);
                     dialog.dismiss();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -233,7 +225,6 @@ public class AddExercisesFragment extends Fragment {
         ByteArrayOutputStream bytes = null;
         File fileName = null;
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            Toast.makeText(getActivity(), "Test 3", Toast.LENGTH_LONG).show();
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == Activity.RESULT_OK) {
                 Uri resultUri = result.getUri();
@@ -256,12 +247,10 @@ public class AddExercisesFragment extends Fragment {
         } else if (requestCode == 2) {
             Uri selectedImageUri = data.getData();
             CropImage.activity(selectedImageUri).start(getContext(), this);
-            Toast.makeText(getActivity(), "Test 2", Toast.LENGTH_LONG).show();
         } else if (requestCode == 1) {
             File file = new File(currentPhotoPath);
             Uri selectedImageUri = Uri.fromFile(file);
             CropImage.activity(selectedImageUri).start(getContext(), this);
-            Toast.makeText(getActivity(), "Test 1", Toast.LENGTH_LONG).show();
         }
     }
 

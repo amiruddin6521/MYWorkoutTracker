@@ -62,7 +62,7 @@ public class ExercisesTabFragment extends Fragment {
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
     private View progExercises, fragExercises;
-    private Button btnUpdateExe, btnDeleteExe, btnBackExe;
+    private Button btnUpdateExe, btnDeleteExe;
     private Boolean status;
 
     @Nullable
@@ -87,7 +87,6 @@ public class ExercisesTabFragment extends Fragment {
         fragExercises = v.findViewById(R.id.exetab_form);
         btnUpdateExe =  v.findViewById(R.id.btnUpdateExe);
         btnDeleteExe = v.findViewById(R.id.btnDeleteExe);
-        btnBackExe = v.findViewById(R.id.btnBackExe);
 
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,13 +143,6 @@ public class ExercisesTabFragment extends Fragment {
             }
         });
 
-        btnBackExe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
-
         return v;
     }
 
@@ -193,7 +185,7 @@ public class ExercisesTabFragment extends Fragment {
                     encoded_string = "";
                     image_name = "";
                     status = false;
-                    roundProfile.setImageResource(R.drawable.person);
+                    roundProfile.setImageResource(R.drawable.ic_machine);
                     dialog.dismiss();
                 } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
@@ -332,7 +324,7 @@ public class ExercisesTabFragment extends Fragment {
                                 edtNameExe.setText(exerciseName);
                                 edtDescExe.setText(description);
                                 edtTypeExe.setText(type);
-                                roundProfile.setImageResource(R.drawable.person);
+                                roundProfile.setImageResource(R.drawable.ic_machine);
                                 status = false;
                             } else if(strRespond.equals("True")){
                                 edtNameExe.setText(exerciseName);

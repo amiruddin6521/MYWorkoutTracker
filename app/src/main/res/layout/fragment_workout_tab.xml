@@ -31,8 +31,8 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical|center"
-                    android:src="@drawable/person"
-                    app:civ_border_color="#EEEEEE"
+                    android:src="@drawable/ic_machine"
+                    app:civ_border_color="@color/colorAccent"
                     app:civ_border_width="0dp"
                     app:civ_shadow="false"
                     app:civ_shadow_color="#8BC34A"
@@ -404,6 +404,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:textColor="#ffffff"
+                        android:textAllCaps="false"
                         android:background="@drawable/ic_background_button"
                         android:text="Add" />
 

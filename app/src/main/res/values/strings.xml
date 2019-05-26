@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">MY Workout Tracker</string>
+    <string name="app_name">My Workout Tracker</string>
     <string name="profile_name">My Profile</string>
+    <string name="register_name">Register Account</string>
+    <string name="about_name">About MWT</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>

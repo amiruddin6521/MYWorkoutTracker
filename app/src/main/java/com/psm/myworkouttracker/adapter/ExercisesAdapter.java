@@ -79,12 +79,17 @@ public class ExercisesAdapter extends BaseAdapter implements Filterable {
         // If weren't re-ordering this you could rely on what you set last time
         holder.txtExercisesName.setText(filteredData.get(position));
         holder.txtDesc.setText(descData.get(position));
+        if (!descData.get(position).equals("")) {
+            holder.txtDesc.setText(descData.get(position));
+        } else {
+            holder.txtDesc.setText("-");
+        }
         if(!pictureData.get(position).equals("")) {
             byte[] data = Base64.decode(pictureData.get(position), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(data, 0, data.length);
             holder.imgData.setImageBitmap(decodedByte);
         } else {
-            holder.imgData.setImageResource(R.drawable.person);
+            holder.imgData.setImageResource(R.drawable.ic_machine);
         }
         return convertView;
     }

@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -224,7 +225,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if(strRespond.equals("True")) {
-                                Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Welcome to MY Workout Tracker, "+name+"!", Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.putExtra("id", id);
                                 startActivity(intent);

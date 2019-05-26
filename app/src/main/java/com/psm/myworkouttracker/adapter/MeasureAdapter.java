@@ -1,16 +1,12 @@
 package com.psm.myworkouttracker.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.psm.myworkouttracker.R;
@@ -60,7 +56,7 @@ public class MeasureAdapter extends BaseAdapter implements Filterable {
         // to reinflate it. We only inflate a new View when the convertView supplied
         // by ListView is null.
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.curr_measure, null);
+            convertView = mInflater.inflate(R.layout.curr_measure_list, null);
 
             // Creates a ViewHolder and store references to the two children views
             // we want to bind data to.

@@ -68,8 +68,6 @@ public class HistoryTabFragment extends Fragment {
         spnExercise.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                progHistory.setVisibility(View.VISIBLE);
-                fragHistory.setVisibility(View.GONE);
                 String selected = parent.getItemAtPosition(position).toString();
                 spnDate.setAdapter(null);
                 loadMachine(selected);
@@ -84,8 +82,6 @@ public class HistoryTabFragment extends Fragment {
         spnDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                progHistory.setVisibility(View.VISIBLE);
-                fragHistory.setVisibility(View.GONE);
                 String selected = parent.getItemAtPosition(position).toString();
                 String exercise = spnExercise.getSelectedItem().toString();
                 if(tId.equals("Cardio")){
@@ -131,6 +127,8 @@ public class HistoryTabFragment extends Fragment {
     }*/
 
     public void loadExerciseData() {
+        progHistory.setVisibility(View.VISIBLE);
+        fragHistory.setVisibility(View.GONE);
         if(haveNetwork()) {
             Runnable run = new Runnable()
             {
@@ -164,9 +162,12 @@ public class HistoryTabFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(exValues != null)
+                            if(exValues.size() > 0)
                             {
                                 loadExerciseSpn();
+                            } else {
+                                progHistory.setVisibility(View.GONE);
+                                txtNoHistory.setVisibility(View.VISIBLE);
                             }
                         }
                     });
@@ -182,13 +183,17 @@ public class HistoryTabFragment extends Fragment {
     public void loadExerciseSpn() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, exValues);
         spnExercise.setAdapter(adapter);
-        String exercise = spnExercise.getSelectedItem().toString();
-        if(!exercise.equals("")) {
-            loadMachine(exercise);
+        if(spnExercise != null && spnExercise.getSelectedItem() != null) {
+            String exercise = spnExercise.getSelectedItem().toString();
+            if (!exercise.equals("")) {
+                loadMachine(exercise);
+            }
         }
     }
 
     public void loadMachine(final String name) {
+        progHistory.setVisibility(View.VISIBLE);
+        fragHistory.setVisibility(View.GONE);
         if(haveNetwork()) {
             Runnable run = new Runnable()
             {
@@ -349,6 +354,8 @@ public class HistoryTabFragment extends Fragment {
     }
 
     public void loadWorkoutDataB(final String machine, final String date) {
+        progHistory.setVisibility(View.VISIBLE);
+        fragHistory.setVisibility(View.GONE);
         if(haveNetwork()) {
             if(date.equals("All")) {
                 Runnable run = new Runnable()
@@ -518,6 +525,8 @@ public class HistoryTabFragment extends Fragment {
     }
 
     public void loadWorkoutDataC(final String machine, final String date) {
+        progHistory.setVisibility(View.VISIBLE);
+        fragHistory.setVisibility(View.GONE);
         if(haveNetwork()) {
             if(date.equals("All")) {
                 Runnable run = new Runnable()

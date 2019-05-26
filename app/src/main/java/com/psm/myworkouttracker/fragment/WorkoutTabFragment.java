@@ -782,7 +782,7 @@ public class WorkoutTabFragment extends Fragment {
                         public void run() {
                             if(strRespond.equals("True") && img64.equals("")) {
                                 setUIData(name, type);
-                                imageMachine.setImageResource(R.drawable.person);
+                                imageMachine.setImageResource(R.drawable.ic_machine);
                             } else if(strRespond.equals("True")) {
                                 setUIData(name, type);
                                 byte[] data = Base64.decode(img64, Base64.DEFAULT);
@@ -838,7 +838,7 @@ public class WorkoutTabFragment extends Fragment {
         edtDist.setText("1.0");
         edtDurr.setText("00:30");
         txtType.setText("-");
-        imageMachine.setImageResource(R.drawable.person);
+        imageMachine.setImageResource(R.drawable.ic_machine);
         mId = "";
         listWorkout.setAdapter(null);
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
@@ -855,6 +855,9 @@ public class WorkoutTabFragment extends Fragment {
             {
                 String strRespond = "";
                 String sets, reps, weight, date;
+                long currDate = System.currentTimeMillis();
+                SimpleDateFormat currTime = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
+                String timeString = currTime.format(currDate);  //This will return current time in 24 Hour format
                 @Override
                 public void run()
                 {
@@ -871,6 +874,7 @@ public class WorkoutTabFragment extends Fragment {
                     params.add(new BasicNameValuePair("varDate", date));
                     params.add(new BasicNameValuePair("varMachine", mId));
                     params.add(new BasicNameValuePair("varUser", uId));
+                    params.add(new BasicNameValuePair("varTime", timeString));
 
                     try{
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
@@ -889,10 +893,7 @@ public class WorkoutTabFragment extends Fragment {
                             if(strRespond.equals("True")) {
                                 String name = edtMachine.getText().toString();
                                 loadWorkoutDataB(name);
-                                long date = System.currentTimeMillis();
-                                SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
-                                String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
-                                Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(),"Added at "+timeString,Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }
@@ -916,6 +917,9 @@ public class WorkoutTabFragment extends Fragment {
             {
                 String strRespond = "";
                 String dist, durr, date;
+                long currDate = System.currentTimeMillis();
+                SimpleDateFormat currTime = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
+                String timeString = currTime.format(currDate);  //This will return current time in 24 Hour format
                 @Override
                 public void run()
                 {
@@ -930,6 +934,7 @@ public class WorkoutTabFragment extends Fragment {
                     params.add(new BasicNameValuePair("varDate", date));
                     params.add(new BasicNameValuePair("varMachine", mId));
                     params.add(new BasicNameValuePair("varUser", uId));
+                    params.add(new BasicNameValuePair("varTime", timeString));
 
                     try{
                         jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
@@ -948,10 +953,7 @@ public class WorkoutTabFragment extends Fragment {
                             if(strRespond.equals("True")) {
                                 String name = edtMachine.getText().toString();
                                 loadWorkoutDataC(name);
-                                long date = System.currentTimeMillis();
-                                SimpleDateFormat time1 = new SimpleDateFormat("kk:mm:ss");  // for 24 hour time
-                                String timeString1 = time1.format(date);  //This will return current time in 24 Hour format
-                                Toast.makeText(getActivity(),"Added at "+timeString1,Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(),"Added at "+timeString,Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getActivity(), "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }

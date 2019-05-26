@@ -13,16 +13,14 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:padding="10dp"
-            android:text="2019-05-27" />
+            android:padding="10dp" />
 
         <TextView
             android:id="@+id/edtValueMeasure"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:layout_marginStart="40dp"
-            android:text="100" />
+            android:layout_marginStart="40dp" />
 
         <ListView
             android:layout_width="0dp"

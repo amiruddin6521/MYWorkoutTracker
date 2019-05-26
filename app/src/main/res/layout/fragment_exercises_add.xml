@@ -5,160 +5,154 @@
     android:layout_height="match_parent"
     android:background="@drawable/ic_background">
 
-    <ScrollView
+    <LinearLayout
         android:id="@+id/addexe_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/cardborder"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center_horizontal"
-                android:background="@drawable/cardborder"
-                android:orientation="vertical">
 
-                <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/imgPhoto2"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="20dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_machine"
+                    app:civ_border_color="@color/colorAccent"
+                    app:civ_border_width="2dp" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/actionCamera2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <com.mikhaellopez.circularimageview.CircularImageView
-                        android:id="@+id/imgPhoto2"
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/person"
-                        android:layout_marginLeft="20dp"
-                        app:civ_border_color="#2E3192"
-                        app:civ_border_width="3dp"/>
-
-                    <android.support.design.widget.FloatingActionButton
-                        android:id="@+id/actionCamera2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="180dp"
-                        android:layout_marginLeft="-30dp"
-                        android:clickable="true"
-                        android:src="@android:drawable/ic_menu_camera"/>
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="Name: "/>
-
-                <EditText
-                    android:id="@+id/edtNameExe2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:selectAllOnFocus="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:singleLine="true" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="Description: "/>
-
-                <EditText
-                    android:id="@+id/edtDescExe2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:selectAllOnFocus="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:singleLine="true" />
-
-                <LinearLayout
-                    android:id="@+id/exeType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="10dp"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:text="Exercise type: "/>
-
-                    <RadioGroup
-                        android:id="@+id/radGrpExe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp">
-                        <RadioButton
-                            android:id="@+id/radB"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:checked="true"
-                            android:text="Body Building"/>
-                        <RadioButton
-                            android:id="@+id/radC"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:text="Cardio"/>
-                    </RadioGroup>
-
-                </LinearLayout>
+                    android:layout_marginStart="-30dp"
+                    android:layout_marginTop="180dp"
+                    android:clickable="true"
+                    android:src="@drawable/ic_camera_alt_white_24dp" />
 
             </LinearLayout>
 
-            <LinearLayout
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Name: " />
+
+            <EditText
+                android:id="@+id/edtNameExe2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:orientation="horizontal">
+                android:inputType="text"
+                android:maxLines="1"
+                android:selectAllOnFocus="true"
+                android:singleLine="true" />
 
-                <Button
-                    android:id="@+id/btnSaveExe"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_background_button"
-                    android:text="Save" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Description: " />
 
-                <Button
-                    android:id="@+id/btnResetExe"
-                    android:layout_width="0dp"
+            <EditText
+                android:id="@+id/edtDescExe2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:selectAllOnFocus="true"
+                android:singleLine="true" />
+
+            <LinearLayout
+                android:id="@+id/exeType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_background_button"
-                    android:text="Reset" />
-            </LinearLayout>
+                    android:layout_marginEnd="10dp"
+                    android:text="Exercise type: " />
 
-            <Button
-                android:id="@+id/btnBackExe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"
-                android:background="@drawable/ic_background_button"
-                android:text="Back" />
+                <RadioGroup
+                    android:id="@+id/radGrpExe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
+
+                    <RadioButton
+                        android:id="@+id/radB"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:checked="true"
+                        android:text="Body Building" />
+
+                    <RadioButton
+                        android:id="@+id/radC"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Cardio" />
+                </RadioGroup>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSaveExe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:background="@drawable/ic_background_button"
+                android:text="Save"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/btnResetExe"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:textAllCaps="false"
+                android:background="@drawable/ic_background_button"
+                android:text="Reset"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

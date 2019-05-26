@@ -44,13 +44,18 @@ public class AutoCompleteExercisesAdapter extends ArrayAdapter<ExercisesItem> {
 
         if (exercisesItem != null) {
             txtName.setText(exercisesItem.getExerciseName());
-            txtDesc.setText(exercisesItem.getExerciseDesc());
+            if (!exercisesItem.getExerciseDesc().equals("")) {
+                txtDesc.setText(exercisesItem.getExerciseDesc());
+            } else {
+                txtDesc.setText("-");
+            }
+
             if (!exercisesItem.getExerciseImg().equals("")) {
                 byte[] decodeValue = Base64.decode(exercisesItem.getExerciseImg(), Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodeValue, 0, decodeValue.length);
                 imgExercise.setImageBitmap(decodedByte);
             } else {
-                imgExercise.setImageResource(R.drawable.person);
+                imgExercise.setImageResource(R.drawable.ic_machine);
             }
 
         }

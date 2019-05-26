@@ -6,32 +6,33 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_workout"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_barbell2"
             android:title="Workout" />
         <item
             android:id="@+id/nav_exercises"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_machine"
             android:title="Exercises" />
         <item
             android:id="@+id/nav_weighttrack"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_scale"
             android:title="Weight Track" />
         <item
             android:id="@+id/nav_bodytrack"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_measuring_tape"
             android:title="Body Track" />
     </group>
 
     <item android:title="Others">
         <menu>
             <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_menu_share"
-                android:title="About" />
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_params"
+                android:title="Setting" />
             <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Logout" />
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_action_info_outline"
+                android:title="About" />
+
         </menu>
     </item>
 

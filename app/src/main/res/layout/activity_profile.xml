@@ -44,8 +44,8 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/person"
                 android:layout_marginLeft="20dp"
-                app:civ_border_color="#2E3192"
-                app:civ_border_width="3dp"/>
+                app:civ_border_color="@color/colorAccent"
+                app:civ_border_width="2dp"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/actionCamera"
@@ -102,12 +102,12 @@
 
                 <ImageButton
                     android:id="@+id/edtName"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="20dp"
                     android:background="@null"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
             <LinearLayout
@@ -141,12 +141,12 @@
 
                 <ImageButton
                     android:id="@+id/edtDob"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="20dp"
                     android:background="@null"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
             <LinearLayout
@@ -180,12 +180,12 @@
 
                 <ImageButton
                     android:id="@+id/edtGender"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="20dp"
                     android:background="@null"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
             <LinearLayout
@@ -219,12 +219,12 @@
 
                 <ImageButton
                     android:id="@+id/edtHeight"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="20dp"
                     android:background="@null"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
             <LinearLayout
@@ -258,12 +258,12 @@
 
                 <ImageButton
                     android:id="@+id/edtWeight"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="20dp"
                     android:background="@null"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
             <LinearLayout
@@ -297,12 +297,12 @@
 
                 <ImageButton
                     android:id="@+id/edtPassword"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginTop="28dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="20dp"
                     android:background="@null"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
 
