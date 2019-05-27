@@ -558,11 +558,16 @@ public class GraphTabFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if(bDate != null)
+                                if(bDate.size() > 0)
                                 {
                                     getMaxWeightRep5();
                                 } else {
-                                    Toast.makeText(getActivity(),"No data",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity(),"No available data",Toast.LENGTH_LONG).show();
+                                    mChart.setData(null);
+                                    mChart.notifyDataSetChanged();
+                                    mChart.invalidate();
+                                    progGraph.setVisibility(View.GONE);
+                                    fragGraph.setVisibility(View.VISIBLE);
                                 }
 
                             }

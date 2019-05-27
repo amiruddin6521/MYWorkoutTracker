@@ -5,154 +5,158 @@
     android:layout_height="match_parent"
     android:background="@drawable/ic_background">
 
-    <LinearLayout
-        android:id="@+id/addexe_form"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/cardborder"
-            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+                android:layout_margin="10dp"
+                android:background="@drawable/cardborder"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-                <com.mikhaellopez.circularimageview.CircularImageView
-                    android:id="@+id/imgPhoto2"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:layout_marginStart="20dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_machine"
-                    app:civ_border_color="@color/colorAccent"
-                    app:civ_border_width="2dp" />
-
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/actionCamera2"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="-30dp"
-                    android:layout_marginTop="180dp"
-                    android:clickable="true"
-                    android:src="@drawable/ic_camera_alt_white_24dp" />
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <com.mikhaellopez.circularimageview.CircularImageView
+                        android:id="@+id/imgPhoto2"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_marginStart="20dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_machine"
+                        app:civ_border_color="@color/colorAccent"
+                        app:civ_border_width="2dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:text="Name: " />
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/actionCamera2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-30dp"
+                        android:layout_marginTop="180dp"
+                        android:clickable="true"
+                        android:src="@drawable/ic_camera_alt_white_24dp" />
 
-            <EditText
-                android:id="@+id/edtNameExe2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:inputType="text"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:singleLine="true" />
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:text="Description: " />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="Name: " />
 
-            <EditText
-                android:id="@+id/edtDescExe2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:selectAllOnFocus="true"
-                android:singleLine="true" />
-
-            <LinearLayout
-                android:id="@+id/exeType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:orientation="vertical"
-                android:visibility="visible">
+                <EditText
+                    android:id="@+id/edtNameExe2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:text="Exercise type: " />
+                    android:text="Description: " />
 
-                <RadioGroup
-                    android:id="@+id/radGrpExe"
+                <EditText
+                    android:id="@+id/edtDescExe2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp">
+                    android:layout_marginEnd="10dp"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true" />
 
-                    <RadioButton
-                        android:id="@+id/radB"
+                <LinearLayout
+                    android:id="@+id/exeType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:checked="true"
-                        android:text="Body Building" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:text="Exercise type: " />
 
-                    <RadioButton
-                        android:id="@+id/radC"
+                    <RadioGroup
+                        android:id="@+id/radGrpExe"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="Cardio" />
-                </RadioGroup>
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp">
 
+                        <RadioButton
+                            android:id="@+id/radB"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:checked="true"
+                            android:text="Body Building" />
+
+                        <RadioButton
+                            android:id="@+id/radC"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="Cardio" />
+                    </RadioGroup>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnSaveExe"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAllCaps="false"
+                    android:background="@drawable/ic_background_button"
+                    android:text="Save"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/btnResetExe"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:textAllCaps="false"
+                    android:background="@drawable/ic_background_button"
+                    android:text="Reset"
+                    android:textColor="#ffffff" />
             </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnSaveExe"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAllCaps="false"
-                android:background="@drawable/ic_background_button"
-                android:text="Save"
-                android:textColor="#ffffff" />
-
-            <Button
-                android:id="@+id/btnResetExe"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:textAllCaps="false"
-                android:background="@drawable/ic_background_button"
-                android:text="Reset"
-                android:textColor="#ffffff" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

@@ -100,7 +100,7 @@ public class ProfileActivity extends AppCompatActivity {
         edtGender = findViewById(R.id.edtGender);
         edtPassword = findViewById(R.id.edtPassword);
         mProgressView = findViewById(R.id.profile_progress);
-        mProfileFormView = findViewById(R.id.profile_form);
+        mProfileFormView = findViewById(R.id.new_profile_form);
 
         loadProfile();
 
