@@ -91,7 +91,7 @@ public class AutoCompleteExercisesAdapter extends ArrayAdapter<ExercisesItem> {
             return results;
         }
 
-        @Override
+        @Override @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             clear();
             addAll((List)results.values);

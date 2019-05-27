@@ -32,6 +32,7 @@
     <string name="status">BMI = weight(kg) / height(m)<sup><small>2</small></sup></string>
     <string name="interneterror">No internet connection detected! Please turn on your Mobile Data/WiFi first!</string>
     <string name="register">Don\'t Have Account? <u>Register Here</u></string>
+    <string name="aboutu">DEVELOPER</string>
 
     <string name="about_text">MY Workout Tracker is a mobile application that record user daily workout. This apps can track their workout, cardio, weight and body size too. It will help user to follow their progression and the evolution of their body based on the all workout record. \n\nUser also can create as many machines as they want with the name they wanted too. No useless exercises are pre-created because user create their own exercise depending on the name of the machine user have in their workout place.\n</string>
 </resources>
