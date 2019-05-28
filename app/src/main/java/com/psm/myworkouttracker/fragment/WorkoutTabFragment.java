@@ -809,7 +809,7 @@ public class WorkoutTabFragment extends Fragment {
             edtMachine.setText(name);
             txtType.setText(type);
             edtSets.setText("1");
-            edtReps.setText("1");
+            edtReps.setText("5");
             edtWeight.setText("5.0");
             hideKeyboard(edtMachine);
             edtMachine.clearFocus();
@@ -820,7 +820,7 @@ public class WorkoutTabFragment extends Fragment {
             edtMachine.setText(name);
             txtType.setText(type);
             edtDist.setText("1.0");
-            edtDurr.setText("00:30");
+            edtDurr.setText("00:10");
             hideKeyboard(edtMachine);
             edtMachine.clearFocus();
             loadWorkoutDataB(name);
@@ -833,10 +833,10 @@ public class WorkoutTabFragment extends Fragment {
         fragWorkout.setVisibility(View.GONE);
         edtMachine.setText("");
         edtSets.setText("1");
-        edtReps.setText("1");
+        edtReps.setText("5");
         edtWeight.setText("5.0");
         edtDist.setText("1.0");
-        edtDurr.setText("00:30");
+        edtDurr.setText("00:10");
         txtType.setText("-");
         imageMachine.setImageResource(R.drawable.ic_machine);
         mId = "";
