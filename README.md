@@ -1,3 +1,4 @@
+<img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/logo.png" width="100" height="100">
 
 # MYWorkoutTracker
 MY Workout Tracker is a mobile application that record user daily workout. 
@@ -30,3 +31,10 @@ Pull requests are not welcome right now until further notice.
 This code is for my final year project (degree) purposes, no license attaches to it.
 
 ## Screenshot
+<img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss1.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss2.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss3.jpg" width="30%" height="30%">
+
+<img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss15.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss4.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss6.jpg" width="30%" height="30%">
+
+<img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss7.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss8.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss9.jpg" width="30%" height="30%">
+
+<img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss11.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss12.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss13.jpg" width="30%" height="30%">
