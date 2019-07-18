@@ -25,7 +25,9 @@ To clone, open your terminal and enter the following command
 $ git clone https://github.com/amiruddin6521/MYWorkoutTracker.git
 
 ## Contributing
-Pull requests are not welcome right now until further notice.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
 
 ## License
 This code is for my final year project (degree) purposes, no license attaches to it.
