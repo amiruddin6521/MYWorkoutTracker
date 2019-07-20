@@ -22,7 +22,7 @@ $ git clone https://github.com/amiruddin6521/MYWorkoutTracker.git
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-This code is for my final year project (degree) purposes, no license attaches to it.
+This code is for my final year project (Degree) purposes, no license attaches to it.
 
 ## Screenshot
 <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss1.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss2.jpg" width="30%" height="30%"> <img src="https://github.com/amiruddin6521/MYWorkoutTracker/blob/master/screenshot/ss3.jpg" width="30%" height="30%">
