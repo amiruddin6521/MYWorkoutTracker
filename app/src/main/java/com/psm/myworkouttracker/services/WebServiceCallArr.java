@@ -22,7 +22,7 @@ public class WebServiceCallArr {
 
     public WebServiceCallArr() {
         jsonArr = null;
-        strUrl = "http://192.168.43.113/MYWorkoutTracker/index.php"; //192.168.1.35, 192.168.1.23, 192.168.43.113, 192.168.1.49
+        strUrl = "http://192.168.1.31/MYWorkoutTracker/index.php"; //192.168.1.35, 192.168.1.23, 192.168.43.113, 192.168.1.49
         //strUrl = "http://myworkouttrackr.000webhostapp.com/";
     }
 
