@@ -23,12 +23,12 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-        android:id="@+id/profile_form"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+            android:id="@+id/profile_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:background="@drawable/cardborder"
-        android:orientation="vertical">
+            android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -305,6 +305,19 @@
                     android:src="@drawable/ic_mode_edit" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/btnDeleteAcc"
+                style="?android:textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:textColor="#ffffff"
+                android:textAllCaps="false"
+                android:background="@drawable/ic_background_button"
+                android:text="@string/action_delete"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>

@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
@@ -59,7 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
     private JSONObject jsnObj = new JSONObject();
     private Dialog dialog;
     private EditText edtUpdate, edtCurrPass, edtNewPass;
-    private Button btnSave;
+    private Button btnSave, btnDeleteAcc;
     private RadioGroup radGender;
     private RadioButton radMale, radFemale;
     private View mProgressView, mProfileFormView;
@@ -101,6 +102,7 @@ public class ProfileActivity extends AppCompatActivity {
         edtPassword = findViewById(R.id.edtPassword);
         mProgressView = findViewById(R.id.profile_progress);
         mProfileFormView = findViewById(R.id.new_profile_form);
+        btnDeleteAcc = findViewById(R.id.btnDeleteAcc);
 
         loadProfile();
 
@@ -317,6 +319,63 @@ public class ProfileActivity extends AppCompatActivity {
                 });
             }
         });
+
+        btnDeleteAcc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(ProfileActivity.this);
+                alertDialog.setIcon(R.drawable.ic_warning_black_24dp);
+                alertDialog.setTitle("Delete Account");
+                alertDialog.setMessage("Are you sure you want to delete this account?");
+                alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final Dialog dialog1 = new Dialog(ProfileActivity.this);
+                        dialog1.setCancelable(true);
+                        dialog1.setContentView(R.layout.dialog_check_password);
+                        edtCurrPass = dialog1.findViewById(R.id.edtCurrPass);
+                        btnSave = dialog1.findViewById(R.id.btnSave);
+                        dialog1.show();
+
+                        btnSave.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(haveNetwork()) {
+                                    boolean cancel = false;
+                                    View focusView = null;
+                                    String data1 = edtCurrPass.getText().toString();
+                                    if (TextUtils.isEmpty(data1)) {
+                                        edtCurrPass.setError(getString(R.string.error_field_required));
+                                        focusView = edtCurrPass;
+                                        cancel = true;
+                                    } else if (!isPasswordValid(data1)) {
+                                        edtCurrPass.setError(getString(R.string.error_invalid_password));
+                                        focusView = edtCurrPass;
+                                        cancel = true;
+                                    }
+                                    if (cancel) {
+                                        focusView.requestFocus();
+                                    } else {
+                                        chkCurrPassword(data1);
+                                        dialog1.cancel();
+                                    }
+                                } else if(!haveNetwork()) {
+                                    Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                });
+
+                alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                alertDialog.show();
+            }
+        });
     }
 
     private boolean haveNetwork() {
@@ -505,88 +564,7 @@ public class ProfileActivity extends AppCompatActivity {
                 CropImage.activity(selectedImageUri).start(this);
             }
         }
-
-
-        /*try {
-            switch (requestCode) {
-                case 1: {
-                    if (resultCode == RESULT_OK) {
-                        File file = new File(currentPhotoPath);
-                        bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.fromFile(file));
-                        if (bitmap != null) {
-                            bytes = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                            fileName = new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis() + ".jpg");
-                            byte[] array = bytes.toByteArray();
-                            String encoded_string = Base64.encodeToString(array, 0);
-                            String image_name = fileName.getName();
-                            updateImage(encoded_string, image_name);
-                        }
-                    }
-                    break;
-                }
-                case 2: {
-                    onSelectFromGalleryResult(data);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        /*if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == 2)
-                onSelectFromGalleryResult(data);
-            else if (requestCode == 1)
-                onCaptureImageResult(data);
-        }*/
     }
-
-    //Handle for select from gallery
-    /*private void onSelectFromGalleryResult(Intent data) {
-        Bitmap bitmap = null;
-        ByteArrayOutputStream bytes = null;
-        File fileName = null;
-        if (data != null) {
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-                bytes = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                fileName = new File(Environment.getExternalStorageDirectory(),
-                        System.currentTimeMillis() + ".jpg");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        byte[] array = bytes.toByteArray();
-        String encoded_string = Base64.encodeToString(array, 0);
-        String image_name = fileName.getName();
-        updateImage(encoded_string, image_name);
-    }*/
-
-    //Handle for image capture from camera
-    /*private void onCaptureImageResult(Intent data) {
-        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".jpg");
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] array = bytes.toByteArray();
-        String encoded_string = Base64.encodeToString(array, 0);
-        String image_name = destination.getName();
-        updateImage(encoded_string, image_name);
-        imgPhoto.setImageBitmap(thumbnail);
-    }*/
 
     //Dialog pick dob
     private void calenderPicker() {
@@ -796,9 +774,9 @@ public class ProfileActivity extends AppCompatActivity {
                         public void run() {
                             if(strRespond.equals("True")) {
                                 loadProfile();
-                                Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -838,9 +816,9 @@ public class ProfileActivity extends AppCompatActivity {
                         public void run() {
                             if(strRespond.equals("True")) {
                                 loadProfile();
-                                Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "Data successfully changed!", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "Data failed to save.", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -880,9 +858,9 @@ public class ProfileActivity extends AppCompatActivity {
                         public void run() {
                             if(strRespond.equals("True")) {
                                 loadProfile();
-                                Toast.makeText(ProfileActivity.this, "Password successfully changed!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "Password successfully changed!", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(ProfileActivity.this, "Password failed to change.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "Password failed to change.", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -923,7 +901,94 @@ public class ProfileActivity extends AppCompatActivity {
                             if(strRespond.equals("True")) {
                                 updatePassword(newPass);
                             } else {
-                                Toast.makeText(ProfileActivity.this, "You has entered wrong current password.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ProfileActivity.this, "You has entered wrong current password.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //Check current password
+    public void chkCurrPassword(final String currPass) {
+        showProgress(true);
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond = "";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnGetCurrPassword"));
+                    params.add(new BasicNameValuePair("varId", id));
+                    params.add(new BasicNameValuePair("varPassword", currPass));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                deleteAcc();
+                            } else {
+                                Toast.makeText(ProfileActivity.this, "You has entered wrong current password.", Toast.LENGTH_LONG).show();
+                                showProgress(false);
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(ProfileActivity.this,R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //Delete account data
+    public void deleteAcc() {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond = "";
+                @Override
+                public void run()
+                {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnDeleteAcc"));
+                    params.add(new BasicNameValuePair("varId", id));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                showProgress(false);
+                                Toast.makeText(ProfileActivity.this, "Your account has been deleted!", Toast.LENGTH_LONG).show();
+                                ((ResultReceiver)getIntent().getParcelableExtra("finisher")).send(1, new Bundle());
+                                ProfileActivity.this.finish();
+                            } else {
+                                showProgress(false);
+                                Toast.makeText(ProfileActivity.this, "Your account failed to delete. Please try again later.", Toast.LENGTH_LONG).show();
                             }
                         }
                     });

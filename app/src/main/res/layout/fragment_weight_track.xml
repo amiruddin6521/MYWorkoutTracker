@@ -180,13 +180,22 @@
                 android:layout_marginStart="10dp"
                 android:textColor="@android:color/holo_blue_light"
                 android:textSize="20sp"
+                android:textStyle="bold|italic"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:text="Status: "
+                android:textSize="20sp"
                 android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/txtBMIStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@android:color/holo_blue_light"
                 android:textSize="20sp"
                 android:textStyle="bold|italic"/>
 

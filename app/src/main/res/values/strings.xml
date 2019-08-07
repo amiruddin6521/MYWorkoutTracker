@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MY Workout Tracker</string>
-    <string name="profile_name">MY Profile</string>
+    <string name="profile_name">My Profile</string>
     <string name="register_name">Register Account</string>
     <string name="about_name">About MWT</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -16,6 +16,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Login</string>
     <string name="action_register">Register</string>
+    <string name="action_delete">Delete Account</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short\nAt least 8 characters</string>
@@ -29,10 +30,10 @@
     <string name="date"><u>Date</u></string>
     <string name="measure"><u>Measure (CM)</u></string>
     <string name="weight"><u>Weight (KG)</u></string>
-    <string name="status">BMI = weight(kg) / height(m)<sup><small>2</small></sup></string>
+    <string name="status">BMI = weight(kg) / height(m)<sup><small>2</small></sup>\n\n01 - 15 = Severely underweight\n16 - 18 = Underweight\n19 - 24 = Normal\n25 - 29 = Overweight\n30 - 34 = Obesity\n</string>
     <string name="interneterror">No internet connection detected! Please turn on your Mobile Data/WiFi first!</string>
     <string name="register">Don\'t Have Account? <u>Register Here</u></string>
     <string name="aboutu">DEVELOPER</string>
 
-    <string name="about_text">MY Workout Tracker is a mobile application that record user daily workout. This apps can track their workout, cardio, weight and body size too. It will help user to follow their progression and the evolution of their body based on the all workout record. \n\nUser also can create as many machines as they want with the name they wanted too. No useless exercises are pre-created because user create their own exercise depending on the name of the machine user have in their workout place.\n</string>
+    <string name="about_text">MY Workout Tracker is a mobile application that record user daily workout. This apps can track their workout, cardio, weight and body size too. It will help user to follow their progression and the evolution of their body based on the all workout record. \n</string>
 </resources>

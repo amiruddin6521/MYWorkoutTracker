@@ -1,5 +1,8 @@
 package com.psm.myworkouttracker.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -8,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
@@ -58,6 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
     private WebServiceCallObj wsc = new WebServiceCallObj();
     private JSONObject jsnObj = new JSONObject();
     private String encoded_string, image_name, currentPhotoPath = "";
+    private View mProgressView, mRegisterFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,8 @@ public class RegisterActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         btnCalender = findViewById(R.id.btnCalender);
         radGender = findViewById(R.id.radGender);
+        mProgressView = findViewById(R.id.login_progress);
+        mRegisterFormView = findViewById(R.id.register_form);
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         txtBirthday.setHint("e.g. "+date);
@@ -90,7 +97,6 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 attemptRegister();
-
             }
         });
 
@@ -121,6 +127,42 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
         return haveMobileData || haveWiFi;
+    }
+
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mRegisterFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mRegisterFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mRegisterFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mRegisterFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
     }
 
     //Validation for register form
@@ -279,13 +321,6 @@ public class RegisterActivity extends AppCompatActivity {
         builder.show();
     }
 
-    //Calling Implicit Intent to open the camera application on user's phone
-    /*private void cameraIntent()
-    {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, 1);
-    }*/
-
     //Calling an implicit intent to open the gallery
     private void galleryIntent()
     {
@@ -368,92 +403,11 @@ public class RegisterActivity extends AppCompatActivity {
             Uri selectedImageUri = Uri.fromFile(file);
             CropImage.activity(selectedImageUri).start(this);
         }
-
-        /*try {
-            switch (requestCode) {
-                case 1: {
-                    if (resultCode == RESULT_OK) {
-                        File file = new File(currentPhotoPath);
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.fromFile(file));
-                        if (bitmap != null) {
-                            roundProfile.setImageBitmap(bitmap);
-                            ByteArrayOutputStream bytes = null;
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                            File fileName = new File(Environment.getExternalStorageDirectory(),System.currentTimeMillis() + ".jpg");
-                            byte[] array = bytes.toByteArray();
-                            encoded_string = Base64.encodeToString(array, 0);
-                            image_name = fileName.getName();
-                        }
-                    }
-                    break;
-                }
-                case 2: {
-                    onSelectFromGalleryResult(data);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
-        /*if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == 2)
-                onSelectFromGalleryResult(data);
-            else if (requestCode == 1)
-                onCaptureImageResult(data);
-        }*/
     }
-
-    //Handle for select from gallery
-    /*private void onSelectFromGalleryResult(Intent data) {
-        Bitmap bm = null;
-        ByteArrayOutputStream bytes = null;
-        File destination = null;
-        if (data != null) {
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-                bytes = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                destination = new File(Environment.getExternalStorageDirectory(),
-                        System.currentTimeMillis() + ".jpg");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        byte[] array = bytes.toByteArray();
-        encoded_string = Base64.encodeToString(array, 0);
-        image_name = destination.getName();
-        //roundProfile.setImageBitmap(bm);
-        Uri selectedImageUri = data.getData();
-        CropImage.activity(selectedImageUri).start(this);
-    }*/
-
-    //Handle for image capture from camera
-    /*private void onCaptureImageResult(Intent data) {
-        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File destination = new File(Environment.getExternalStorageDirectory(),
-                System.currentTimeMillis() + ".jpg");
-        FileOutputStream fo;
-        try {
-            destination.createNewFile();
-            fo = new FileOutputStream(destination);
-            fo.write(bytes.toByteArray());
-            fo.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] array = bytes.toByteArray();
-        encoded_string = Base64.encodeToString(array, 0);
-        image_name = destination.getName();
-        roundProfile.setImageBitmap(thumbnail);
-    }*/
 
     //Check valid email
     public void checkRegisterData() {
+        showProgress(true);
         if(haveNetwork()) {
             Runnable run = new Runnable()
             {
@@ -481,6 +435,7 @@ public class RegisterActivity extends AppCompatActivity {
                             if(strRespond.equals("True")) {
                                 saveRegisterData();
                             } else {
+                                showProgress(false);
                                 Toast.makeText(RegisterActivity.this, "This email has been used. Please use another email.", Toast.LENGTH_LONG).show();
                                 txtEmail.setFocusable(true);
                             }
@@ -537,9 +492,11 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if(strRespond.equals("True")) {
+                                showProgress(false);
                                 Toast.makeText(RegisterActivity.this, "You have successfully registered!", Toast.LENGTH_LONG).show();
                                 RegisterActivity.this.finish();
                             } else {
+                                showProgress(false);
                                 Toast.makeText(RegisterActivity.this, "Something wrong. Please check your internet connection.", Toast.LENGTH_LONG).show();
                             }
                         }
