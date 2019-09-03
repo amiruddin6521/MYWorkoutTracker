@@ -107,7 +107,7 @@ public class WeightTrackFragment extends Fragment {
                     hideKeyboard(currMeasure);
                     currMeasure.clearFocus();
                 } else {
-                    Toast.makeText(getActivity(), "Date and weight form should not left empty!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Date and weight form should not leave empty!", Toast.LENGTH_LONG).show();
                 }
             }
         });

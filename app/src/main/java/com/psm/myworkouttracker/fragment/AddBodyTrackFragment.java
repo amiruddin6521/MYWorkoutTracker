@@ -108,7 +108,7 @@ public class AddBodyTrackFragment extends Fragment {
                     hideKeyboard(currMeasure);
                     currMeasure.clearFocus();
                 } else {
-                    Toast.makeText(getActivity(), "Date and measure form should not left empty!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Date and measure form should not leave empty!", Toast.LENGTH_LONG).show();
                 }
             }
         });

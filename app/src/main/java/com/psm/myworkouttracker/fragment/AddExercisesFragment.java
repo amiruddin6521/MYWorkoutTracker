@@ -20,6 +20,7 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -73,6 +74,8 @@ public class AddExercisesFragment extends Fragment {
         edtNameExe =  v.findViewById(R.id.edtNameExe2);
         edtDescExe = v.findViewById(R.id.edtDescExe2);
 
+        edtNameExe.setOnFocusChangeListener(touchRazEdit);
+
         MainActivity activity = (MainActivity) getActivity();
         uId = activity.getMyData();
 
@@ -97,7 +100,12 @@ public class AddExercisesFragment extends Fragment {
                 alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        saveMachineData();
+                        String name = edtNameExe.getText().toString();
+                        if(!name.equals("")) {
+                            checkMachineName();
+                        } else {
+                            Toast.makeText(getActivity(), "Name form should not leave empty!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
 
@@ -328,4 +336,67 @@ public class AddExercisesFragment extends Fragment {
             Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
         }
     }
+
+    //Check machine name
+    public void checkMachineName() {
+        if(haveNetwork()) {
+            Runnable run = new Runnable()
+            {
+                String strRespond = "";
+                String name;
+                @Override
+                public void run()
+                {
+                    name = edtNameExe.getText().toString();
+
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("selectFn", "fnCheckMachine"));
+                    params.add(new BasicNameValuePair("varName", name));
+                    params.add(new BasicNameValuePair("varId", uId));
+
+                    try{
+                        jsnObj = wsc.makeHttpRequest(wsc.fnGetURL(), "POST", params);
+                        strRespond = jsnObj.getString("respond");
+
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    if(getActivity() == null)
+                        return;
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(strRespond.equals("True")) {
+                                saveMachineData();
+                            } else {
+                                edtNameExe.requestFocus();
+                                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                                imm.showSoftInput(edtNameExe, InputMethodManager.SHOW_IMPLICIT);
+                                Toast.makeText(getActivity(), "This exercise name already existed, please add new one.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            Thread thr = new Thread(run);
+            thr.start();
+        } else if(!haveNetwork()) {
+            Toast.makeText(getActivity(),R.string.interneterror,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private View.OnFocusChangeListener touchRazEdit = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                switch (v.getId()) {
+                    case R.id.edtNameExe:
+                        edtNameExe.setText("");
+                        break;
+                }
+            }
+        }
+    };
 }

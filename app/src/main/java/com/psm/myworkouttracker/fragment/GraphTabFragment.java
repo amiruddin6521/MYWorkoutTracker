@@ -1,6 +1,7 @@
 package com.psm.myworkouttracker.fragment;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -17,7 +18,9 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -515,6 +518,46 @@ public class GraphTabFragment extends Fragment {
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(newDate));
 
+        float totalData = 0;
+        float min = Float.parseFloat(weight.get(0));
+        float max = Float.parseFloat(weight.get(0));
+        int totalSize = weight.size();
+        for(int i = 0; i < totalSize; i++){
+            totalData += Float.parseFloat(weight.get(i));
+            if(Float.parseFloat(weight.get(i)) < min){
+                min = Float.parseFloat(weight.get(i));
+            } else if(Float.parseFloat(weight.get(i)) > max){
+                max = Float.parseFloat(weight.get(i));
+            }
+        }
+        float avg = totalData / totalSize;
+        String s = String.format("%.1f", avg);
+        float totalAvg = Float.valueOf(s);
+
+        LimitLine ll1 = new LimitLine(totalAvg, "Average = "+totalAvg);
+        ll1.setLineWidth(1f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll1.setTextSize(10f);
+
+        LimitLine ll2 = new LimitLine(max, "Max = "+max);
+        ll2.setLineWidth(1f);
+        ll2.enableDashedLine(10f, 10f, 0f);
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll2.setTextSize(10f);
+
+        LimitLine ll3 = new LimitLine(min, "Min = "+min);
+        ll3.setLineWidth(1f);
+        ll3.enableDashedLine(10f, 10f, 0f);
+        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll3.setTextSize(10f);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll2);
+        leftAxis.addLimitLine(ll3);
+
         mChart.notifyDataSetChanged();
         mChart.invalidate();
         progGraph.setVisibility(View.GONE);
@@ -678,6 +721,46 @@ public class GraphTabFragment extends Fragment {
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(newDate));
 
+        float totalData = 0;
+        float min = Float.parseFloat(weight.get(0));
+        float max = Float.parseFloat(weight.get(0));
+        int totalSize = weight.size();
+        for(int i = 0; i < totalSize; i++){
+            totalData += Float.parseFloat(weight.get(i));
+            if(Float.parseFloat(weight.get(i)) < min){
+                min = Float.parseFloat(weight.get(i));
+            } else if(Float.parseFloat(weight.get(i)) > max){
+                max = Float.parseFloat(weight.get(i));
+            }
+        }
+        float avg = totalData / totalSize;
+        String s = String.format("%.1f", avg);
+        float totalAvg = Float.valueOf(s);
+
+        LimitLine ll1 = new LimitLine(totalAvg, "Average = "+totalAvg);
+        ll1.setLineWidth(1f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll1.setTextSize(10f);
+
+        LimitLine ll2 = new LimitLine(max, "Max = "+max);
+        ll2.setLineWidth(1f);
+        ll2.enableDashedLine(10f, 10f, 0f);
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll2.setTextSize(10f);
+
+        LimitLine ll3 = new LimitLine(min, "Min = "+min);
+        ll3.setLineWidth(1f);
+        ll3.enableDashedLine(10f, 10f, 0f);
+        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll3.setTextSize(10f);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll2);
+        leftAxis.addLimitLine(ll3);
+
         mChart.notifyDataSetChanged();
         mChart.invalidate();
         progGraph.setVisibility(View.GONE);
@@ -765,7 +848,7 @@ public class GraphTabFragment extends Fragment {
 
                                     String data1 = jsnObj.getString("reps");
                                     String data2 = jsnObj.getString("weight");
-                                    double total = Integer.parseInt(data1) * Double.parseDouble(data2);
+                                    double total = Double.parseDouble(data1) * Double.parseDouble(data2);
                                     sumWeight += total;
                                 }
                                 weight.add(String.format("%.1f", sumWeight));
@@ -840,6 +923,46 @@ public class GraphTabFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(newDate));
+
+        float totalData = 0;
+        float min = Float.parseFloat(weight.get(0));
+        float max = Float.parseFloat(weight.get(0));
+        int totalSize = weight.size();
+        for(int i = 0; i < totalSize; i++){
+            totalData += Float.parseFloat(weight.get(i));
+            if(Float.parseFloat(weight.get(i)) < min){
+                min = Float.parseFloat(weight.get(i));
+            } else if(Float.parseFloat(weight.get(i)) > max){
+                max = Float.parseFloat(weight.get(i));
+            }
+        }
+        float avg = totalData / totalSize;
+        String s = String.format("%.1f", avg);
+        float totalAvg = Float.valueOf(s);
+
+        LimitLine ll1 = new LimitLine(totalAvg, "Average = "+totalAvg);
+        ll1.setLineWidth(1f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll1.setTextSize(10f);
+
+        LimitLine ll2 = new LimitLine(max, "Max = "+max);
+        ll2.setLineWidth(1f);
+        ll2.enableDashedLine(10f, 10f, 0f);
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll2.setTextSize(10f);
+
+        LimitLine ll3 = new LimitLine(min, "Min = "+min);
+        ll3.setLineWidth(1f);
+        ll3.enableDashedLine(10f, 10f, 0f);
+        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll3.setTextSize(10f);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll2);
+        leftAxis.addLimitLine(ll3);
 
         mChart.notifyDataSetChanged();
         mChart.invalidate();
@@ -998,6 +1121,46 @@ public class GraphTabFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(newDate));
+
+        float totalData = 0;
+        float min = Float.parseFloat(dist.get(0));
+        float max = Float.parseFloat(dist.get(0));
+        int totalSize = dist.size();
+        for(int i = 0; i < totalSize; i++){
+            totalData += Float.parseFloat(dist.get(i));
+            if(Float.parseFloat(dist.get(i)) < min){
+                min = Float.parseFloat(dist.get(i));
+            } else if(Float.parseFloat(dist.get(i)) > max){
+                max = Float.parseFloat(dist.get(i));
+            }
+        }
+        float avg = totalData / totalSize;
+        String s = String.format("%.1f", avg);
+        float totalAvg = Float.valueOf(s);
+
+        LimitLine ll1 = new LimitLine(totalAvg, "Average = "+totalAvg);
+        ll1.setLineWidth(1f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll1.setTextSize(10f);
+
+        LimitLine ll2 = new LimitLine(max, "Max = "+max);
+        ll2.setLineWidth(1f);
+        ll2.enableDashedLine(10f, 10f, 0f);
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll2.setTextSize(10f);
+
+        LimitLine ll3 = new LimitLine(min, "Min = "+min);
+        ll3.setLineWidth(1f);
+        ll3.enableDashedLine(10f, 10f, 0f);
+        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll3.setTextSize(10f);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll2);
+        leftAxis.addLimitLine(ll3);
 
         mChart.notifyDataSetChanged();
         mChart.invalidate();
@@ -1163,6 +1326,46 @@ public class GraphTabFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(newDate));
+
+        float totalData = 0;
+        float min = Float.parseFloat(durr.get(0));
+        float max = Float.parseFloat(durr.get(0));
+        int totalSize = durr.size();
+        for(int i = 0; i < totalSize; i++){
+            totalData += Float.parseFloat(durr.get(i));
+            if(Float.parseFloat(durr.get(i)) < min){
+                min = Float.parseFloat(durr.get(i));
+            } else if(Float.parseFloat(durr.get(i)) > max){
+                max = Float.parseFloat(durr.get(i));
+            }
+        }
+        float avg = totalData / totalSize;
+        String s = String.format("%.1f", avg);
+        float totalAvg = Float.valueOf(s);
+
+        LimitLine ll1 = new LimitLine(totalAvg, "Average = "+totalAvg);
+        ll1.setLineWidth(1f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll1.setTextSize(10f);
+
+        LimitLine ll2 = new LimitLine(max, "Max = "+max);
+        ll2.setLineWidth(1f);
+        ll2.enableDashedLine(10f, 10f, 0f);
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll2.setTextSize(10f);
+
+        LimitLine ll3 = new LimitLine(min, "Min = "+min);
+        ll3.setLineWidth(1f);
+        ll3.enableDashedLine(10f, 10f, 0f);
+        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll3.setTextSize(10f);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll2);
+        leftAxis.addLimitLine(ll3);
 
         mChart.notifyDataSetChanged();
         mChart.invalidate();
@@ -1397,6 +1600,46 @@ public class GraphTabFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(newDate));
+
+        float totalData = 0;
+        float min = Float.parseFloat(speed.get(0));
+        float max = Float.parseFloat(speed.get(0));
+        int totalSize = speed.size();
+        for(int i = 0; i < totalSize; i++){
+            totalData += Float.parseFloat(speed.get(i));
+            if(Float.parseFloat(speed.get(i)) < min){
+                min = Float.parseFloat(speed.get(i));
+            } else if(Float.parseFloat(speed.get(i)) > max){
+                max = Float.parseFloat(speed.get(i));
+            }
+        }
+        float avg = totalData / totalSize;
+        String s = String.format("%.1f", avg);
+        float totalAvg = Float.valueOf(s);
+
+        LimitLine ll1 = new LimitLine(totalAvg, "Average = "+totalAvg);
+        ll1.setLineWidth(1f);
+        ll1.enableDashedLine(10f, 10f, 0f);
+        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll1.setTextSize(10f);
+
+        LimitLine ll2 = new LimitLine(max, "Max = "+max);
+        ll2.setLineWidth(1f);
+        ll2.enableDashedLine(10f, 10f, 0f);
+        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll2.setTextSize(10f);
+
+        LimitLine ll3 = new LimitLine(min, "Min = "+min);
+        ll3.setLineWidth(1f);
+        ll3.enableDashedLine(10f, 10f, 0f);
+        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll3.setTextSize(10f);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
+        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll2);
+        leftAxis.addLimitLine(ll3);
 
         mChart.notifyDataSetChanged();
         mChart.invalidate();
